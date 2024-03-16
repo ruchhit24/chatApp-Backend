@@ -4,7 +4,8 @@ import {Link} from 'react-router-dom'
 const ChatItem = ({ avatar,name,_id, groupChat=false ,sameSender ,isOnline=true , newMessageAlert , index=0 ,handleDeleteChat}) => {
   return (
     <Link to={`/chat/${_id}`} onContextMenu={(e)=>handleDeleteChat(e,_id,groupChat)}>
-        <div className='p-3 border-b-[1px] border-gray-400 flex items-center gap-3 hover:bg-gray-300'>
+        <div className='p-3 border-b-[1px] border-gray-400 flex items-center justify-between gap-3 hover:bg-gray-300'>
+            <div className='flex items-center gap-3'>
             <img src={avatar} alt='dj' className='w-12 h-12 object-cover rounded-full '/>
             <div className='flex justify-between items-center'>
                 <h2>{name}</h2>
@@ -14,6 +15,7 @@ const ChatItem = ({ avatar,name,_id, groupChat=false ,sameSender ,isOnline=true 
                     )
                 }
                  
+            </div>
             </div>
             {
                     isOnline && (
