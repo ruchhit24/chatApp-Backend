@@ -2,8 +2,7 @@ import React from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Login from "./pages/Login";
 import Chat from "./pages/Chat";
-import Home from "./pages/Home";
-import Header from "./components/Header";
+import Home from "./pages/Home"; 
 import PrivateRoute from "./components/PrivateRoute";
 import NotFound from "./pages/NotFound";
 
@@ -12,8 +11,7 @@ let user = true;
 const App = () => {
   return (
     <>
-      <BrowserRouter>
-        <Header />
+      <BrowserRouter> 
         <Routes>
           <Route element={<PrivateRoute user={user} />}>
             <Route path="/" element={<Home />} />
