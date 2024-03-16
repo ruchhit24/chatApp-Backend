@@ -2,6 +2,7 @@ import React from "react";
 import Header from "./Header";
 import ChatList from "./ChatList"; 
 import {SampleData} from '../utils/SampleData'
+import Profile from "./Profile";
  
 
 const AppLayout = () => (WrappedComponent) => {
@@ -24,7 +25,9 @@ const AppLayout = () => (WrappedComponent) => {
             />
           </div>
           <div className="col-span-5 bg-slate-600"></div>
-          <div className="col-span-4 bg-slate-400"></div>
+          <div className="col-span-4 bg-zinc-800">
+            <Profile/>
+          </div>
         </div>
         <WrappedComponent {...props} />
       </>
