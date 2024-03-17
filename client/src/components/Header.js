@@ -9,7 +9,7 @@ import NewGroup from './NewGroup';
 const Header = () => { 
 
   return (
-    <div className='text-3xl bg-gray-800 py-8 static px-8 flex justify-between'>
+    <div className='text-3xl bg-gray-800 py-4 static px-8 flex justify-between'>
       <div>
         <h2 className='text-white text-xl'>ChatApp</h2>
       </div>

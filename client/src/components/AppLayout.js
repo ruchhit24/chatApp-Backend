@@ -24,12 +24,14 @@ const AppLayout = () => (WrappedComponent) => {
               handleDeleteChat={handleDeleteChat}
             />
           </div>
-          <div className="col-span-5 bg-slate-600"></div>
+          <div className="col-span-5 bg-gray-200">
+          <WrappedComponent {...props} />
+          </div>
           <div className="col-span-4 bg-zinc-800">
             <Profile/>
           </div>
         </div>
-        <WrappedComponent {...props} />
+        
       </>
     );
   };
