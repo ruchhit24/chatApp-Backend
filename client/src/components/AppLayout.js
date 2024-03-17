@@ -13,10 +13,10 @@ const AppLayout = () => (WrappedComponent) => {
       console.log(`clicked groupchat ${groupChat} and id = ${_id}`);
     };
     return (
-      <>
+      <div className="w-full h-[100vh] relative">
         <Header />
-        <div className="grid grid-cols-12  min-h-screen">
-          <div className="col-span-3">
+        <div className="grid grid-cols-12 h-[91vh]">
+          <div className="col-span-3 overflow-y-scroll">
             <ChatList
               chats={SampleData}
               chatId={'1'}
@@ -32,7 +32,7 @@ const AppLayout = () => (WrappedComponent) => {
           </div>
         </div>
         
-      </>
+      </div>
     );
   };
 };

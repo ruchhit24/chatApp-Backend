@@ -5,6 +5,7 @@ import Chat from "./pages/Chat";
 import Home from "./pages/Home"; 
 import PrivateRoute from "./components/PrivateRoute";
 import NotFound from "./pages/NotFound";
+import Groups from "./pages/Groups";
 
 let user = true;
 
@@ -16,6 +17,7 @@ const App = () => {
           <Route element={<PrivateRoute user={user} />}>
             <Route path="/" element={<Home />} />
             <Route path="/chat/:id" element={<Chat />} />
+            <Route path="/groups" element={<Groups/>}/>
           </Route>
 
           <Route
