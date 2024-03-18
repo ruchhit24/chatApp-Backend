@@ -6,6 +6,10 @@ const server = express();
 const PORT = 8000
 
 
+server.get('/',(req,res)=>{
+    res.send('root page !!')
+})
+
 server.use('/user',router)
 
 server.listen(PORT,()=>{
