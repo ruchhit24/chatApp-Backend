@@ -16,9 +16,9 @@ export const newUser = async(req,res) => {
   }
   
   const user = await User.create({ 
-   name : 'user33',
-   username : 'ndnn33',
-   password : 'user33',
+   name : 'ruchit',
+   username : 'ruchhit24',
+   password : 'ruchit',
    avatar,
   }
   )
