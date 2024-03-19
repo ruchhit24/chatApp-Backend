@@ -2,6 +2,7 @@ import express from 'express'
 import {router} from './routes/user.route.js' 
 import dotenv from 'dotenv'
 import mongoose from 'mongoose';
+import cookieParser from 'cookie-parser';
 
 dotenv.config()
 
@@ -9,6 +10,8 @@ const server = express();
 
 const PORT = 8000;
 
+server.use(express.json())
+server.use(cookieParser())
 
 mongoose.connect(process.env.MONGO_URI)
 .then(()=>{
