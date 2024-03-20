@@ -4,6 +4,8 @@ import dotenv from 'dotenv'
 import mongoose from 'mongoose';
 import cookieParser from 'cookie-parser';
 import {router as chatRouter} from './routes/chat.route.js';
+// import { createMessageInChat } from './seeders/chat.js';
+// import { createGroupChats, createSingleChats } from './seeders/chat.js';
 // import { createUser } from './seeders/user.js';
 
 dotenv.config()
@@ -16,6 +18,11 @@ server.use(express.json())
 server.use(cookieParser())
 
 // createUser(10)
+
+// createSingleChats(10)
+// createGroupChats(10)
+
+// createMessageInChat('65f9873eca6aa167e365afeb',50)
 
 mongoose.connect(process.env.MONGO_URI)
 .then(()=>{

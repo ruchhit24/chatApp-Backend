@@ -10,5 +10,8 @@ router
 .get('/',userTestContoller)
 .post('/new',AvatarUpload,newUser)
 .post('/login',login)
-.get("/me",isAuthenticated,getMyProfile)
+
+// ab yha se sare routes me authentication required h
+router.use(isAuthenticated)
+.get("/me",getMyProfile)
 .get("/logout",logout)
