@@ -5,4 +5,6 @@ limits : { fileSize : 1024 * 1024 * 5  } });  // 5mb
 
 const AvatarUpload = multerUpload.single("avatar");
 
-export { AvatarUpload }
+const attachments = multerUpload.array("files",5)
+
+export { AvatarUpload , attachments}

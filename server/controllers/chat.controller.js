@@ -1,4 +1,5 @@
 import {Chat} from '../models/chat.model.js'
+import { Message } from '../models/message.model.js';
 import { User } from '../models/user.model.js'; 
 // import { ALERT, REFETCH_CHATS } from '../constants/socketEvents.js';
 
@@ -188,6 +189,58 @@ export const leaveGroup = async (req, res, next) => {
         // emitEvent(req, REFETCH_CHATS, chat.members);
 
         return res.status(201).json({ success: true, message: 'Member removed successfully' });
+    } catch (error) {
+        next(error);
+    }
+};
+
+export const sendAttachments = async (req, res, next) => {
+    try {
+        const { chatId } = req.body;
+        
+        // Find the chat and the current user
+        const chat = await Chat.findById(chatId);
+        const me = await User.findById(req.user, "name avatar");
+
+        // Check if the chat exist
+        if (!chat)
+        return res.status(400).json({message : "Chat not found" })
+
+        // Check if attachments are provided
+        const files = req.files || [];
+        if (files.length < 1) 
+            return res.status(400).json({message : "Please provide attachments" })
+
+
+       console.log(files)     
+       const attachments = []
+       
+            // Prepare message object for database
+        const messageForDb = {
+            content: "", // You may add content if necessary
+            attachments,
+            sender: me._id,
+            chat: chatId
+        };
+
+        // Prepare message object for real-time messaging with sender details
+        const messageForRealTime = {
+            ...messageForDb,
+            sender: {
+                _id: me._id,
+                name: me.name,
+                avatar: me.avatar.url
+            }
+        };
+
+        // Save message to the database
+        const message = await Message.create(messageForDb);
+
+        // Emit events for real-time messaging
+        // emitEvent(req, NEW_ATTACHMENT, chat.members, { message: messageForRealTime, chatId });
+        // emitEvent(req, NEW_MESSAGE_ALERT, chat.members, { chatId });
+
+        return res.status(201).json({ success: true, message });
     } catch (error) {
         next(error);
     }
