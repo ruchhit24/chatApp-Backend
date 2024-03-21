@@ -7,9 +7,9 @@ import { deleteFilesFromCloudinary } from "../utils/features.js";
 export const newGroupChat = async (req, res, next) => {
   const { name, members } = req.body;
 
-  if (members.lenfgth < 2) {
-    return res.status(401).json({ message: "group must hv atlast 3 memeners" });
-  }
+  // if (members.length < 2) {
+  //   return res.status(401).json({ message: "group must hv atlast 3 memeners" });
+  // }
 
   const allMembers = [...members, req.user];
 
@@ -232,15 +232,23 @@ export const sendAttachments = async (req, res, next) => {
   try {
     const { chatId } = req.body;
 
+     // Check if attachments are provided
+
+    const files = req.files || []
+    if (files.length < 1)
+    return res.status(400).json({ message: "Please provide attachments" });
+
+    if (files.length > 5)
+    return res.status(400).json({ message: "files can't be more than 5" });
+
     // Find the chat and the current user
     const chat = await Chat.findById(chatId);
     const me = await User.findById(req.user, "name avatar");
 
     // Check if the chat exist
     if (!chat) return res.status(400).json({ message: "Chat not found" });
+ 
 
-    // Check if attachments are provided
-    const files = req.files || [];
     if (files.length < 1)
       return res.status(400).json({ message: "Please provide attachments" });
 

@@ -9,6 +9,15 @@ export const userTestContoller = (req,res)=>{
 export const newUser = async(req,res) => {
 
   const {bio,name,username,password} = req.body;
+  const file = req.file;
+
+  console.log(file)
+
+  if(!file)
+  {
+    return res.status(401).json({success  :false , message : "please upload avatar"})
+  }
+
 
   const avatar = {
   publicId : 'jfjfdckkhk33',
