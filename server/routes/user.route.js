@@ -1,5 +1,5 @@
 import express from 'express'
-import { acceptFriendRequest, getMyNotifications, getMyProfile, login, logout, newUser, searchUser, sendFriendRequest, userTestContoller } from '../controllers/user.controller.js';
+import { acceptFriendRequest, getMyFriends, getMyNotifications, getMyProfile, login, logout, newUser, searchUser, sendFriendRequest, userTestContoller } from '../controllers/user.controller.js';
 import { AvatarUpload } from '../middlewares/multer.js';
 import { isAuthenticated } from '../middlewares/auth.js';
 import { acceptRequestValidator, loginValidator, registerValidator, sendRequestValidator, validateHandler } from '../utils/validator.js';
@@ -20,4 +20,5 @@ router.use(isAuthenticated)
 .get("/search",searchUser)
 .put("/sendrequest",sendRequestValidator(),validateHandler,sendFriendRequest)
 .put("/acceptrequest",acceptRequestValidator(),validateHandler,acceptFriendRequest)
-.get('/notifications',getMyNotifications);
+.get('/notifications',getMyNotifications)
+.get("/friends",getMyFriends)

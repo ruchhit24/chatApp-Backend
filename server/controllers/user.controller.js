@@ -1,6 +1,7 @@
 import { compare } from "bcrypt"
 import { User } from "../models/user.model.js"
-import { Request } from "../models/request.model.js" 
+import { Request } from "../models/request.model.js"
+import {Chat} from '../models/chat.model.js' 
   import { sendToken } from "../utils/sendToken.js"
 
 export const userTestContoller = (req,res)=>{
@@ -144,6 +145,48 @@ export const getMyNotifications = async (req, res) => {
       }));
 
       return res.status(200).json({ success: true, requests: allRequests });
+  } catch (error) {
+      console.error(error);
+      return res.status(500).json({ success: false, message: 'Internal server error' });
+  }
+};
+
+export const getMyFriends = async (req, res) => {
+  try {
+
+    const getOtherMember = (members, userId) => {
+      return members.find(
+        (member) => member._id.toString() !== userId.toString()
+      );
+    };
+      const chatId = req.query.chatId;
+      let friends;
+
+      const chats = await Chat.find({
+          members: req.user,
+          groupChat: false,
+      }).populate("members", "name avatar");
+
+      friends = chats.map(({ members }) => {
+          const otherUser = getOtherMember(members, req.user);
+          return {
+              _id: otherUser._id,
+              name: otherUser.name,
+              avatar: otherUser.avatar.url,
+          };
+      });
+
+      if (chatId) {
+          const chat = await Chat.findById(chatId);
+
+          const availableFriends = friends.filter((friend) => 
+              !chat.members.includes(friend._id)
+          );
+
+          return res.status(200).json({ success: true, friends: availableFriends });
+      } else {
+          return res.status(200).json({ success: true, friends });
+      }
   } catch (error) {
       console.error(error);
       return res.status(500).json({ success: false, message: 'Internal server error' });
