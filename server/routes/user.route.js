@@ -1,8 +1,8 @@
 import express from 'express'
-import { getMyProfile, login, logout, newUser, userTestContoller } from '../controllers/user.controller.js';
+import { acceptFriendRequest, getMyNotifications, getMyProfile, login, logout, newUser, searchUser, sendFriendRequest, userTestContoller } from '../controllers/user.controller.js';
 import { AvatarUpload } from '../middlewares/multer.js';
 import { isAuthenticated } from '../middlewares/auth.js';
-import { loginValidator, registerValidator, validateHandler } from '../utils/validator.js';
+import { acceptRequestValidator, loginValidator, registerValidator, sendRequestValidator, validateHandler } from '../utils/validator.js';
 
 export const router = express.Router();
 
@@ -17,3 +17,7 @@ router
 router.use(isAuthenticated)
 .get("/me",getMyProfile)
 .get("/logout",logout)
+.get("/search",searchUser)
+.put("/sendrequest",sendRequestValidator(),validateHandler,sendFriendRequest)
+.put("/acceptrequest",acceptRequestValidator(),validateHandler,acceptFriendRequest)
+.get('/notifications',getMyNotifications);

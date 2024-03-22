@@ -1,0 +1,3 @@
+const NEW_REQUEST = "NEWREQUEST"
+
+export {NEW_REQUEST}

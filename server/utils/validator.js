@@ -70,8 +70,15 @@ const loginValidator = () => [
     
     body("name","Please enter name").notEmpty() , 
     ]
+    const sendRequestValidator = () => [
+        body("userId","please enter user id").notEmpty(),
+      ];
+      const acceptRequestValidator = () => [
+        body("requestId","please enter user id").notEmpty(),
+        body("accept").notEmpty().withMessage("please add request").isBoolean
+      
+      ().withMessage("Acept must be boolean")
+      ];
 
- 
 
-
-   export{registerValidator,validateHandler,loginValidator,newGroupValidator,addMemberValidator,removeMemberValidator,leaveGroupValidator,sendAttachmentsValidator,getChatIdValidator,renameGroupValidator}
+   export{registerValidator,validateHandler,loginValidator,newGroupValidator,addMemberValidator,removeMemberValidator,leaveGroupValidator,sendAttachmentsValidator,getChatIdValidator,renameGroupValidator,sendRequestValidator,acceptRequestValidator}
