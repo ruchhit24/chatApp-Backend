@@ -17,6 +17,10 @@ const userSchema = new mongoose.Schema({
         required : true,
         select : false,
     },
+    bio : {
+        type :String,
+        required : true,
+    },
     avatar : {
         public_id : {
             type :String,

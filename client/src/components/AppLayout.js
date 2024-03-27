@@ -2,10 +2,11 @@ import React from "react";
 import Header from "./Header";
 import ChatList from "./ChatList"; 
 import {SampleData} from '../utils/SampleData'
-import Profile from "./Profile";
+import Profile from "./Profile"; 
  
 
 const AppLayout = () => (WrappedComponent) => {
+ 
   return (props) => {
 
     const handleDeleteChat = (e, _id, groupChat) => {
@@ -28,7 +29,7 @@ const AppLayout = () => (WrappedComponent) => {
           <WrappedComponent {...props} />
           </div>
           <div className="col-span-4 bg-zinc-800">
-            <Profile/>
+            <Profile />
           </div>
         </div>
         
