@@ -1,10 +1,18 @@
 import React, { useState } from "react";
 import { useFileHandler, useInputValidation} from '6pp'
 import { usernameValidator } from "../utils/validator";
-import { useStrongPassword } from "6pp";
+import { useStrongPassword } from "6pp"; 
+import { server } from '../constants/config'
+import axios from "axios";
+import { userExists } from "../redux/reducers/auth";
+import { useDispatch } from "react-redux";
+import { toast } from "react-hot-toast";
 
 const Login = () => {
   const [isSignedin, setIsSignedin] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
+
+  const dispatch = useDispatch();
 
   const username = useInputValidation("",usernameValidator ); 
   const name = useInputValidation( "" );
@@ -21,13 +29,43 @@ const Login = () => {
     }
   };
 
+ const handleLogin = async(e) => {
+    e.preventDefault();
+
+    setIsLoading(true);
+
+    const config = {
+      withCredentials: true,
+    headers: {
+      "Content-Type": "application/json",
+    },
+     }
+ 
+    try {
+      const { data } = await axios.post(
+        `${server}/api/v1/user/login`,
+        {
+          username: username.value,
+          password: password.value,
+        },
+        config,
+      );
+      dispatch(userExists(data.user));
+      toast.success(data.message);
+    } catch (error) {
+     toast.error(error?.response?.data?.message || "Something Went Wrong");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
     <div className="w-full min-h-screen flex justify-center items-center">
       <div className="w-[400px] border border-gray-400 shadow-2xl rounded-lg p-6">
         {isSignedin ? (
           <>
             <h2 className="text-center mt-8 text-3xl font-bold">L o G i N</h2>
-            <div className="flex flex-col items-center pt-4 gap-4">
+            <form className="flex flex-col items-center pt-4 gap-4" onSubmit={handleLogin}>
               <input
                 type="text"
                 id="username"
@@ -44,12 +82,13 @@ const Login = () => {
                 value={password.value}
                 onChange={password.changeHandler}
               />
-            </div>
-            <div className="flex justify-center items-center mt-6">
-              <button className="px-4 py-2 bg-gradient-to-r from-cyan-400 to-cyan-700 rounded-lg cursor-pointer font-semibold text-white ">
+              <div className="flex justify-center items-center mt-6">
+              <button type="submit" className="px-4 py-2 bg-gradient-to-r from-cyan-400 to-cyan-700 rounded-lg cursor-pointer font-semibold text-white ">
                 LOGIN
               </button>
             </div>
+            </form>
+             
             <h3 className="text-center mt-4 text-sm font-semibold">OR</h3>
             <h2
               className="text-center mt-4 text-sm font-semibold text-cyan-700 hover:underline cursor-pointer"
@@ -77,7 +116,7 @@ const Login = () => {
                     </div>
                 )
               }
-            <div className="flex flex-col items-center pt-4 gap-4">
+            <form className="flex flex-col items-center pt-4 gap-4">
               <input
                 type="text"
                 id="name"
@@ -111,7 +150,7 @@ const Login = () => {
                 value={password.value}
                 onChange={password.changeHandler}
               />
-            </div>
+            </form>
             <div className="flex items-center justify-center">
               <input type="file" accept="image/*" className="p-3 text-xs" onChange={avatar.changeHandler} />
               <button className=" px-2 py-2 bg-gradient-to-r from-cyan-500 to-cyan-800 rounded-lg text-xs text-white">
@@ -120,10 +159,10 @@ const Login = () => {
               
             </div>
             <div className="flex items-center justify-center">
-            <img src={avatar.preview} alt="phoyo" width={100} height={100} className="object-cover rounded-full"/>
+            <img src={avatar.preview} alt="upload an mage" width={100} height={100} className="object-cover rounded-full"/>
             </div>
             <div className="flex justify-center items-center mt-6">
-              <button className="px-4 py-2 bg-gradient-to-r from-cyan-400 to-cyan-700 rounded-lg cursor-pointer font-semibold text-white ">
+              <button type="submit" className="px-4 py-2 bg-gradient-to-r from-cyan-400 to-cyan-700 rounded-lg cursor-pointer font-semibold text-white ">
                 REGISTER
               </button>
             </div>
