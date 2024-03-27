@@ -1,6 +1,5 @@
 import React from 'react'
-import ChatItem from './ChatItem'
-// import ChatItem from './ChatItem'
+import ChatItem from './ChatItem' 
 
 const ChatList = ({chats=[],chatId,onlineUsers=[],newMessagesAlert=[{ chatId:'',count:0, }],handleDeleteChat }) => { 
     const isOnline = true;

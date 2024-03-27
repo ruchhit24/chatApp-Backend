@@ -5,17 +5,33 @@ import Search from './Search';
 import Notification from './Notification';
 import NewGroup from './NewGroup';
 import { Link } from 'react-router-dom';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import axios from 'axios';
 import { toast } from 'react-hot-toast';
 import { userNotExists } from '../redux/reducers/auth.js';
 import { server } from '../constants/config.js';
+import { setIsNewGroup, setIsNotification, setIsSearch } from '../redux/reducers/misc';
 
 
 const Header = () => { 
  
   const dispatch = useDispatch();
  
+  const { isSearch, isNotification, isNewGroup } = useSelector(
+    (state) => state.misc
+  );
+
+  const openSearch = () => dispatch(setIsSearch(true));
+
+  const openNewGroup = () => {
+    dispatch(setIsNewGroup(true));
+  };
+
+  const openNotification = () => {
+    dispatch(setIsNotification(true)); 
+  };
+
+
   const logoutHandler = async () => {
     try {
       const { data } = await axios.get(`${server}/api/v1/user/logout`, {
@@ -34,12 +50,12 @@ const Header = () => {
         <h2 className='text-white text-xl'>ChatApp</h2>
       </div>
       <div className='flex gap-8 items-center'>
-          <Search/>
-          <NewGroup/>
+          <Search onClick={openSearch}/>
+          <NewGroup onClick={openNewGroup}/>
           <Link to={'/groups'}>
           <FaUserGroup className='text-white w-6 h-6 cursor-pointer hover:text-gray-500'/>
           </Link>
-          <Notification/>
+          <Notification onClick={openNotification}/>
          <PiSignOutBold className='text-white w-6 h-6 cursor-pointer hover:text-gray-500' onClick={logoutHandler}/>
          
       </div>
