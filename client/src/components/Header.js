@@ -5,9 +5,28 @@ import Search from './Search';
 import Notification from './Notification';
 import NewGroup from './NewGroup';
 import { Link } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
+import axios from 'axios';
+import { toast } from 'react-hot-toast';
+import { userNotExists } from '../redux/reducers/auth.js';
+import { server } from '../constants/config.js';
 
 
 const Header = () => { 
+ 
+  const dispatch = useDispatch();
+ 
+  const logoutHandler = async () => {
+    try {
+      const { data } = await axios.get(`${server}/api/v1/user/logout`, {
+        withCredentials: true,
+      });
+      dispatch(userNotExists());
+      toast.success(data.message);
+    } catch (error) {
+      toast.error(error?.response?.data?.message || "Something went wrong");
+    }
+  };
 
   return (
     <div className='text-3xl bg-gray-800 py-4 w-full px-8 flex justify-between'>
@@ -18,10 +37,10 @@ const Header = () => {
           <Search/>
           <NewGroup/>
           <Link to={'/groups'}>
-          <FaUserGroup className='text-white w-6 h-6'/>
+          <FaUserGroup className='text-white w-6 h-6 cursor-pointer hover:text-gray-500'/>
           </Link>
           <Notification/>
-         <PiSignOutBold className='text-white w-6 h-6'/>
+         <PiSignOutBold className='text-white w-6 h-6 cursor-pointer hover:text-gray-500' onClick={logoutHandler}/>
          
       </div>
     </div>

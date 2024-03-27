@@ -18,7 +18,7 @@ const userSchema = new mongoose.Schema({
         select : false,
     },
     avatar : {
-        publicId : {
+        public_id : {
             type :String,
             required : true,
         },

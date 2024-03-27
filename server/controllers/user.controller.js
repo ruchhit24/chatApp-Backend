@@ -3,6 +3,7 @@ import { User } from "../models/user.model.js"
 import { Request } from "../models/request.model.js"
 import {Chat} from '../models/chat.model.js' 
   import { sendToken } from "../utils/sendToken.js"
+import { uploadFilesToCloudinary } from "../utils/features.js"
 
 export const userTestContoller = (req,res)=>{
   res.send('hellow world')
@@ -20,16 +21,18 @@ export const newUser = async(req,res) => {
     return res.status(401).json({success  :false , message : "please upload avatar"})
   }
 
+  const result = await uploadFilesToCloudinary([file]);
 
   const avatar = {
-  publicId : 'jfjfdckkhk33',
-  url : 'jffjfhjfdjh33'
-  }
+    public_id: result[0].public_id,
+    url: result[0].url,
+  };
   
   const user = await User.create({ 
-   name : 'ruchit',
-   username : 'ruchhit244',
-   password : 'ruchit',
+   name,
+   bio,
+   username ,
+   password ,
    avatar,
   }
   )
@@ -43,13 +46,13 @@ export const newUser = async(req,res) => {
     const {username,password } = req.body;
     const user = await User.findOne({username}).select("+password");
     
-    if(!user) { return res.status(400).json({message : "invalide username"})}
+    if(!user) { return res.status(400).json({message : "invalid username"})}
     
     const isPasswordMatched = await compare(password,user.password);
     
     if(!isPasswordMatched)
     {
-    return res.status(400).json({message : "invalide cred"});
+    return res.status(400).json({message : "invalid password"});
     }
     
     sendToken(res,user,200,`welcome back ${user.name}`);

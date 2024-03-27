@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Login from "./pages/Login";
 import Chat from "./pages/Chat";
@@ -18,6 +18,8 @@ import {Toaster} from 'react-hot-toast'
 const App = () => { 
 
     const { user, loader } = useSelector((state) => state.auth);
+    
+    const [loading, setLoading] = useState(true);
   
     const dispatch = useDispatch();
   
@@ -25,17 +27,20 @@ const App = () => {
       axios
         .get(`${server}/api/v1/user/me`, { withCredentials: true })
         .then(({ data }) => dispatch(userExists(data.user)))
-        .catch((err) => dispatch(userNotExists()));
-    }, []);
+        .catch((err) => dispatch(userNotExists()))
+        .finally(() => setLoading(false));
+    }, [dispatch]);
+    
+    if (loading || loader) {
+      return <div>Loading...</div>;
+  }
 
-    return loader ? (
-      <div>loading</div>
-    ) : (
+    return  (
     <>
       <BrowserRouter> 
         <Routes>
           <Route element={<PrivateRoute user={user} />}>
-            <Route path="/" element={<Home />} />
+            <Route path="/" element={<Home/>} />
             <Route path="/chat/:id" element={<Chat />} />
             <Route path="/groups" element={<Groups/>}/>
           </Route>

@@ -61,3 +61,7 @@ const Chat = () => {
 };
 
 export default AppLayout()(Chat);
+
+
+npm run satrt
+npm strat

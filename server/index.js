@@ -13,7 +13,8 @@ import { NEW_MESSAGE, NEW_MESSAGE_ALERT } from './constants/events.js';
 import {v4 as uuid} from 'uuid'
 import { getSockets } from './utils/features.js';
 import { Message } from './models/message.model.js';
- 
+import cors from 'cors'
+import { v2 as cloudinary } from "cloudinary";
 
 dotenv.config()
 
@@ -23,6 +24,11 @@ const PORT = 8000;
 
 server.use(express.json())
 server.use(cookieParser())
+server.use(cors({
+    origin: 'http://localhost:3000', 
+    credentials: true // Enable CORS credentials (cookies, authorization headers, etc.)
+  }));
+  
 
 // createUser(10)
 
@@ -30,6 +36,12 @@ server.use(cookieParser())
 // createGroupChats(10)
 
 // createMessageInChat('65f9873eca6aa167e365afeb',50)
+
+cloudinary.config({
+    cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+    api_key: process.env.CLOUDINARY_API_KEY,
+    api_secret: process.env.CLOUDINARY_API_SECRET,
+  });
 
 mongoose.connect(process.env.MONGO_URI)
 .then(()=>{
@@ -101,9 +113,9 @@ server.get('/',(req,res)=>{
     res.send('root page !!')
 })
 
-server.use('/user',userRouter);
+server.use('/api/v1/user',userRouter);
 
-server.use('/chat',chatRouter)
+server.use('/api/v1/chat',chatRouter)
 
 server2.listen(PORT,()=>{
     console.log(`server is listening at port =${PORT} `)
