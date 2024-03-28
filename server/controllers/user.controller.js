@@ -133,7 +133,7 @@ export const acceptFriendRequest = async (req, res) => {
       request.deleteOne()
   ]);
 
-  emitEvent(req, REFETCH_CHATS, members);
+  // emitEvent(req, REFETCH_CHATS, members);
 
   return res.status(200).json({ success: true, message: 'Friend request accepted', senderId: request.sender._id });
 };

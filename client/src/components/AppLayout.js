@@ -13,6 +13,8 @@ const AppLayout = (props) => { // Removed the higher-order component wrapper
   const { isLoading, data, isError, error, refetch } = useMyChatsQuery("");
   const chatId = params.chatId;
 
+  console.log('data = ',data)
+
   useEffect(() => {
     if(isError) toast.error(error?.data?.mesage || 'something went wrong');
  },[isError,error])
@@ -31,7 +33,7 @@ const AppLayout = (props) => { // Removed the higher-order component wrapper
             <Skeleton />
           ) : (
             <ChatList
-              chats={data?.chats}
+              chats={data?.transformedChats}
               chatId={chatId}
               handleDeleteChat={handleDeleteChat}
             />

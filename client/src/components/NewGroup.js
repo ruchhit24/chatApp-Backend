@@ -24,7 +24,7 @@ const NewGroup = () =>{
     const handleClose = () => setOpen(false);
     const [users,setUsers]= useState(SampleUser)
     const searchValue = useInputValidation('');
-    console.log(users)
+    // console.log(users)
   return (
     <>
     <IoMdAdd className='text-white w-6 h-6' onClick={handleOpen}/>
