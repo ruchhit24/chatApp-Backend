@@ -2,14 +2,15 @@ import React, { useCallback, useEffect, useRef, useState } from "react";
 import AppLayout from "../components/AppLayout";
 import { CgAttachment } from "react-icons/cg";
 import { IoMdSend } from "react-icons/io";
-import { SampleMessage } from "../utils/SampleMessage";
+// import { SampleMessage } from "../utils/SampleMessage";
 import MessageComponent from "../components/MessageComponent";
 import { useSocket } from "../socket";
 import { NEW_MESSAGE } from "../constants/events";
-import { useChatDetailsQuery } from "../redux/api/api";
+import { useChatDetailsQuery, useGetMessagesQuery } from "../redux/api/api";
 import { Skeleton } from "@mui/material";
 import { useParams } from "react-router-dom";
 import { useSelector } from "react-redux";
+import { useInfiniteScrollTop } from "6pp";
 
 // const user = {
 //   _id : 'yooKiId',
@@ -18,12 +19,12 @@ import { useSelector } from "react-redux";
 
 const Chat = () => {
   const { user } = useSelector((state) => state.auth);
-  console.log('user= ',user)
+  // console.log('user= ',user)
 
   const params = useParams();
   const { chatId } = params;
 
-  console.log('chatid',chatId)
+  // console.log('chatid',chatId)
 
 
   const containerRef = useRef(null);
@@ -62,14 +63,30 @@ useEffect(() => {
    return () => { socket.off(NEW_MESSAGE,newMessageHandler); };
 } , [] );
 
+const [page, setPage] = useState(1);
+const oldMessagesChunk = useGetMessagesQuery({ chatId, page });
+console.log(oldMessagesChunk);
+
+const { data , setData } = useInfiniteScrollTop(
+  containerRef,
+  oldMessagesChunk.data?.totalPages,
+  page,
+  setPage,
+  oldMessagesChunk.data?.messages
+);
+
+console.log('old messages',data);
+
+const allMessages = [...data, ...messages];
+
 
   return chatDetails.isLoading ? (
     <Skeleton />
   ) : (
     <AppLayout>
-        <div ref={containerRef} className="flex flex-col h-full">
+        <div ref={containerRef} className="flex flex-col h-[91vh] overflow-y-scroll">
         <div className="flex-1 flex flex-col p-3 ">
-          {messages.map((msg) => (
+          {allMessages.map((msg) => (
             <MessageComponent message={msg} user={user} key={msg._id} />
           ))}
         </div>

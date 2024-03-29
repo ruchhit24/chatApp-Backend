@@ -29,7 +29,7 @@ const Search = () => {
   const [searchUser] = useLazySearchUserQuery();
   const search = useInputValidation('');
   const [data, setData] = useState(null);
-  console.log('data',data)
+  // console.log('data',data)
   const [loading, setLoading] = useState(false);
   const [users, setUsers] = useState(SampleUser);
 

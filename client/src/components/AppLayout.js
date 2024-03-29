@@ -17,12 +17,12 @@ const AppLayout = (props) => { // Removed the higher-order component wrapper
   const params = useParams();
   const { chatId } = params;
 
-  console.log('chatid',chatId)
-  console.log('data = ',data)
+  // console.log('chatid',chatId)
+  // console.log('data = ',data)
 
   const socket = useSocket();
-  console.log('socket',socket)
-   console.log('socket id = ',socket.id)
+  // console.log('socket',socket)
+  //  console.log('socket id = ',socket.id)
 
   useEffect(() => {
     if(isError) toast.error(error?.data?.mesage || 'something went wrong');
@@ -34,10 +34,10 @@ const AppLayout = (props) => { // Removed the higher-order component wrapper
   };
   
   return (
-    <div className="w-full h-[100vh] relative">
+    <div className="w-full min-h-screen relative">
       <Header />
       <div className="grid grid-cols-12 h-[91vh]">
-        <div className="col-span-3 overflow-y-scroll">
+        <div className="col-span-3 overflow-y-scroll h-[91vh]">
            {isLoading ? (
             <Skeleton />
           ) : (
@@ -48,10 +48,10 @@ const AppLayout = (props) => { // Removed the higher-order component wrapper
             />
           )}
         </div>
-        <div className="col-span-5 bg-gray-200">
+        <div className="col-span-5 bg-gray-200 h-[91vh]">
         {props.children} 
         </div>
-        <div className="col-span-4 bg-zinc-800">
+        <div className="col-span-4 bg-zinc-800 h-[91vh]">
           <Profile />
         </div>
       </div>

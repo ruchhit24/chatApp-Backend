@@ -3,10 +3,10 @@ import { fileFormat } from "../lib/Features";
 import RenderAttachment from "./RenderAttachment"; 
 
 const MessageComponent = ({ message, user }) => {
-    console.log('message',message)
+    // console.log('message',message)
     const { sender, content, attachments = [], createdAt } = message;
     const sameSender = sender?._id === user?._id;
-    console.log(sender._id,user._id)
+    // console.log(sender._id,user._id)
     const messageClass = sameSender ? 'self-end' : 'self-start';
     
 const timeAgo= moment(createdAt).fromNow()

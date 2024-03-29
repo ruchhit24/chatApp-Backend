@@ -45,8 +45,8 @@ const Header = () => {
   };
 
   return (
-    <div className='text-3xl bg-gray-800 py-4 w-full px-8 flex justify-between'>
-      <div>
+    <div className='text-3xl bg-gray-800 h-[4rem] w-full px-8 flex justify-between'>
+      <div className='flex items-center'>
         <h2 className='text-white text-xl'>ChatApp</h2>
       </div>
       <div className='flex gap-8 items-center'>
