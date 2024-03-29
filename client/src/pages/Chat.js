@@ -9,8 +9,10 @@ import { NEW_MESSAGE } from "../constants/events";
 import { useChatDetailsQuery, useGetMessagesQuery } from "../redux/api/api";
 import { Skeleton } from "@mui/material";
 import { useParams } from "react-router-dom";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useInfiniteScrollTop } from "6pp";
+import FileMenu from "../components/FileMenu";
+import { setIsFileMenu } from "../redux/reducers/misc";
 
 // const user = {
 //   _id : 'yooKiId',
@@ -28,6 +30,7 @@ const Chat = () => {
 
 
   const containerRef = useRef(null);
+  const dispatch = useDispatch()
  
 
   const socket = useSocket();
@@ -79,6 +82,13 @@ console.log('old messages',data);
 
 const allMessages = [...data, ...messages];
 
+const [fileMenuAnchor, setFileMenuAnchor] = useState(null);
+
+const handleFileOpen = (e) => {
+  dispatch(setIsFileMenu(true));
+  setFileMenuAnchor(e.currentTarget);
+};
+
 
   return chatDetails.isLoading ? (
     <Skeleton />
@@ -92,7 +102,7 @@ const allMessages = [...data, ...messages];
         </div>
         <div className="p-3 bg-gray-300">
           <form className="flex items-center" onSubmit={submitHandler}>
-            <CgAttachment className="w-8 h-8 mr-2" />
+            <CgAttachment className="w-8 h-8 mr-2" onClick={handleFileOpen} />
             <input
               placeholder="Type some message here.."
               value={message}
@@ -101,6 +111,7 @@ const allMessages = [...data, ...messages];
             />
             <IoMdSend type="submit" className="w-8 h-8 ml-2" />
           </form>
+          <FileMenu anchorE1={fileMenuAnchor} chatId={chatId} />
         </div>
       </div>
     </AppLayout>
