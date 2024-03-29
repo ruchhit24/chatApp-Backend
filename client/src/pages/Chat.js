@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import AppLayout from "../components/AppLayout";
 import { CgAttachment } from "react-icons/cg";
 import { IoMdSend } from "react-icons/io";
@@ -9,13 +9,16 @@ import { NEW_MESSAGE } from "../constants/events";
 import { useChatDetailsQuery } from "../redux/api/api";
 import { Skeleton } from "@mui/material";
 import { useParams } from "react-router-dom";
+import { useSelector } from "react-redux";
 
-const user = {
-  _id : 'yooKiId',
-  name : 'yoo',
-}
+// const user = {
+//   _id : 'yooKiId',
+//   name : 'yoo',
+// }
 
 const Chat = () => {
+  const { user } = useSelector((state) => state.auth);
+  console.log('user= ',user)
 
   const params = useParams();
   const { chatId } = params;
@@ -24,11 +27,11 @@ const Chat = () => {
 
 
   const containerRef = useRef(null);
-
-  console.log("Chat ID:", chatId);
+ 
 
   const socket = useSocket();
   const [message, setMessage] = useState("");
+  const [messages, setMessages] = useState([]);
 
   const chatDetails = useChatDetailsQuery({ chatId, skip: !chatId });
 
@@ -48,13 +51,25 @@ const Chat = () => {
     socket.emit(NEW_MESSAGE, { chatId, members, message });
     setMessage("");
   };
+
+  const newMessageHandler = useCallback((data) => { 
+      console.log(data);
+      setMessages((prev) => [...prev, data.message]);
+    } ,[] );
+
+useEffect(() => { 
+   socket.on(NEW_MESSAGE,newMessageHandler);
+   return () => { socket.off(NEW_MESSAGE,newMessageHandler); };
+} , [] );
+
+
   return chatDetails.isLoading ? (
     <Skeleton />
   ) : (
     <AppLayout>
         <div ref={containerRef} className="flex flex-col h-full">
         <div className="flex-1 flex flex-col p-3 ">
-          {SampleMessage.map((msg) => (
+          {messages.map((msg) => (
             <MessageComponent message={msg} user={user} key={msg._id} />
           ))}
         </div>
