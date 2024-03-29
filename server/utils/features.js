@@ -1,6 +1,6 @@
 import { v4 as uuid } from "uuid";
 import { v2 as cloudinary } from "cloudinary";
-
+import { userSocketIds } from "../index.js";
    
 const getBase64 = (file) =>
 `data:${file.mimetype};base64,${file.buffer.toString("base64")}`;
@@ -11,7 +11,7 @@ console.log("files deleted")
 }
 
 export const getSockets = (users = [])=>{
-    const sockets = users.map((user) => userSocketIds.get(user._id.toString()));
+    const sockets = users.map((user) => userSocketIds.get(user.toString()));
     return sockets 
    }
 

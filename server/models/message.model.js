@@ -12,7 +12,7 @@ const messageSchema = new mongoose.Schema({
      sender : {
         type : mongoose.Types.ObjectId,
         ref : "User",
-        required : true,
+        required : true, 
     },
     attachments : [{
         publicId : {

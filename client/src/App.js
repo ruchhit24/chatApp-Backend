@@ -12,6 +12,7 @@ import { userExists, userNotExists } from "./redux/reducers/auth";
 import { server } from "./constants/config";
 
 import {Toaster} from 'react-hot-toast'
+import { SocketProvider } from "./socket";
 
 // let user = true;
 
@@ -39,9 +40,11 @@ const App = () => {
     <>
       <BrowserRouter> 
         <Routes>
-          <Route element={<PrivateRoute user={user} />}>
+          <Route element={<SocketProvider>
+                <PrivateRoute user={user} />
+              </SocketProvider>}>
             <Route path="/" element={<Home/>} />
-            <Route path="/chat/:id" element={<Chat />} />
+            <Route path="/chat/:chatId" element={<Chat/>} />
             <Route path="/groups" element={<Groups/>}/>
           </Route>
 

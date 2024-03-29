@@ -29,6 +29,7 @@ const Search = () => {
   const [searchUser] = useLazySearchUserQuery();
   const search = useInputValidation('');
   const [data, setData] = useState(null);
+  console.log('data',data)
   const [loading, setLoading] = useState(false);
   const [users, setUsers] = useState(SampleUser);
 
@@ -70,7 +71,7 @@ const Search = () => {
   useEffect(() => {
     const timeOutId = setTimeout(() => {
       searchUser(search.value)
-        .then(({ data }) => setUsers(data.users))
+        .then(({ data }) => setUsers(data?.users))
         .catch((e) => console.log(e));
     }, 1000);
 

@@ -15,6 +15,7 @@ import { getSockets } from './utils/features.js';
 import { Message } from './models/message.model.js';
 import cors from 'cors'
 import { v2 as cloudinary } from "cloudinary";
+import { socketAuthenticator } from './middlewares/auth.js';
 
 dotenv.config()
 
@@ -22,10 +23,17 @@ const server = express();
 
 const PORT = 8000;
 
+const corsOptions =  {
+    origin: 'http://localhost:3000', 
+    methods : ["GET","PUT","DELETE","POST"],
+    credentials: true // Enable CORS credentials (cookies, authorization headers, etc.)
+  }
+
 server.use(express.json())
 server.use(cookieParser())
 server.use(cors({
     origin: 'http://localhost:3000', 
+    methods : ["GET","PUT","DELETE","POST"],
     credentials: true // Enable CORS credentials (cookies, authorization headers, etc.)
   }));
   
@@ -55,10 +63,23 @@ const user = { _id: 'sjnvd88', name: 'jack' };
 const userSocketIds = new Map(); // Initialize a Map to store user socket IDs
 
 const server2 = createServer(server);
-const io = new Server(server2, {});
+const io = new Server(server2,{cors : corsOptions} );
+
+io.use((socket, next) => {
+    cookieParser()(
+      socket.request,
+      socket.request.res,
+      async (err) => await socketAuthenticator(err, socket, next)
+    );
+  });
 
 io.on("connection", (socket) => {
     console.log('A user is connected with socketId = ', socket.id);
+      
+    const user = socket.user;
+    console.log('user = ',user)
+
+
     const { _id } = user;
 
     // Store user's socket ID
@@ -120,3 +141,5 @@ server.use('/api/v1/chat',chatRouter)
 server2.listen(PORT,()=>{
     console.log(`server is listening at port =${PORT} `)
 })
+
+export {userSocketIds}

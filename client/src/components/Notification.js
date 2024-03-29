@@ -30,7 +30,7 @@ const Notification = () => {
     const handleClose = () => setOpen(false);
     
     const { isLoading, data, error, isError } = useGetNotificationsQuery();
-   console.log(data)
+//    console.log(data)
 
    const [acceptRequest] = useAcceptFriendRequestMutation();
   

@@ -6,14 +6,23 @@ import { useMyChatsQuery } from "../redux/api/api";
 import { Skeleton } from "@mui/material";
 import { useParams } from "react-router-dom"; 
 import { toast } from "react-hot-toast";
+import { useSocket } from "../socket";
+import Chat from "../pages/Chat";
+ 
 
 const AppLayout = (props) => { // Removed the higher-order component wrapper
+   
+  const { isLoading, data, isError, error, refetch } = useMyChatsQuery("");
   
   const params = useParams();
-  const { isLoading, data, isError, error, refetch } = useMyChatsQuery("");
-  const chatId = params.chatId;
+  const { chatId } = params;
 
+  console.log('chatid',chatId)
   console.log('data = ',data)
+
+  const socket = useSocket();
+  console.log('socket',socket)
+   console.log('socket id = ',socket.id)
 
   useEffect(() => {
     if(isError) toast.error(error?.data?.mesage || 'something went wrong');
@@ -40,7 +49,7 @@ const AppLayout = (props) => { // Removed the higher-order component wrapper
           )}
         </div>
         <div className="col-span-5 bg-gray-200">
-          {props.children} {/* Render the WrappedComponent */}
+        {props.children} 
         </div>
         <div className="col-span-4 bg-zinc-800">
           <Profile />
