@@ -8,8 +8,11 @@ const ChatList = ({chats=[],chatId,onlineUsers=[],newMessagesAlert=[{ chatId:'',
         {
             chats.map((data,index)=>{
                 const { avatar , _id ,name , groupChat , members } =data ; 
+                const newMessageAlert = newMessagesAlert.find(
+          ({ chatId }) => chatId === _id
+        );
                return (
-                <ChatItem avatar={avatar}  _id={_id} name={name}  groupChat={groupChat}  members={members} sameSender={chatId === _id} key={ _id } isOnline={isOnline}/>
+                <ChatItem avatar={avatar}  _id={_id} name={name}  groupChat={groupChat}  members={members} sameSender={chatId === _id} key={ _id } isOnline={isOnline} newMessageAlert={newMessageAlert}/>
                )  
         })
         }

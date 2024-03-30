@@ -13,6 +13,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { useInfiniteScrollTop } from "6pp";
 import FileMenu from "../components/FileMenu";
 import { setIsFileMenu } from "../redux/reducers/misc";
+import { removeNewMessagesAlert } from "../redux/reducers/chat";
 
 // const user = {
 //   _id : 'yooKiId',
@@ -95,6 +96,8 @@ const handleFileOpen = (e) => {
 };
 
 useEffect(() => { 
+
+  dispatch(removeNewMessagesAlert(chatId));
 
   return () => {
     setMessages([]);

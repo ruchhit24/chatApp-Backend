@@ -8,9 +8,10 @@ import { useParams } from "react-router-dom";
 import { toast } from "react-hot-toast";
 import { useSocket } from "../socket";
 import Chat from "../pages/Chat";
-import { NEW_REQUEST } from "../constants/events";
-import { useDispatch } from "react-redux";
-import { incrementNotification } from "../redux/reducers/chat";
+import { NEW_MESSAGE_ALERT, NEW_REQUEST } from "../constants/events";
+import { useDispatch, useSelector } from "react-redux";
+import { incrementNotification, setNewMessagesAlert } from "../redux/reducers/chat";
+import { saveToLocalStorage } from "../lib/Features";
  
 
 const AppLayout = (props) => { // Removed the higher-order component wrapper
@@ -21,6 +22,8 @@ const AppLayout = (props) => { // Removed the higher-order component wrapper
   const { chatId } = params;
 
   const dispatch  = useDispatch()
+
+  const { newMessagesAlert } = useSelector((state) => state.chat);
 
   // console.log('chatid',chatId)
   // console.log('data = ',data)
@@ -46,6 +49,22 @@ const AppLayout = (props) => { // Removed the higher-order component wrapper
     socket.on(NEW_REQUEST,newRequestListener);
     return () => { socket.off(NEW_REQUEST,newRequestListener); };
  } , [] );
+
+ const newMessageAlertListener = useCallback(
+  (data) => {
+    if (data.chatId === chatId) return;
+    dispatch(setNewMessagesAlert(data));
+  },
+  [chatId]
+);
+useEffect(() => { 
+  socket.on(NEW_MESSAGE_ALERT,newMessageAlertListener);
+  return () => { socket.off(NEW_MESSAGE_ALERT,newMessageAlertListener); };
+} , [chatId] );
+
+useEffect(() => {
+  saveToLocalStorage({ key: NEW_MESSAGE_ALERT, value: newMessagesAlert });
+}, [newMessagesAlert]);
   
   return (
     <div className="w-full min-h-screen relative">
@@ -59,6 +78,7 @@ const AppLayout = (props) => { // Removed the higher-order component wrapper
               chats={data?.transformedChats}
               chatId={chatId}
               handleDeleteChat={handleDeleteChat}
+              newMessagesAlert={newMessagesAlert}
             />
           )}
         </div>
