@@ -1,6 +1,7 @@
 import { v4 as uuid } from "uuid";
 import { v2 as cloudinary } from "cloudinary";
 import { userSocketIds } from "../index.js";
+import { io } from "../index.js";
    
 const getBase64 = (file) =>
 `data:${file.mimetype};base64,${file.buffer.toString("base64")}`;
@@ -37,7 +38,7 @@ export const uploadFilesToCloudinary = async (files = []) => {
        const results = await Promise.all(uploadPromises);
    
        const formattedResults = results.map((result) => ({
-         public_id: result.public_id,
+         publicId: result.public_id,
          url: result.secure_url,
        }));
        return formattedResults;
@@ -45,3 +46,11 @@ export const uploadFilesToCloudinary = async (files = []) => {
        throw new Error("Error uploading files to cloudinary", err);
      }
    };
+
+   const emitEvent = (req, event, users, data) => {
+    // const io = req.server.get("io");
+    const usersSocket = getSockets(users);
+    io.to(usersSocket).emit(event, data);
+  };
+  
+  export { emitEvent}

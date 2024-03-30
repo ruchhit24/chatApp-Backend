@@ -3,7 +3,8 @@ import { User } from "../models/user.model.js"
 import { Request } from "../models/request.model.js"
 import {Chat} from '../models/chat.model.js' 
   import { sendToken } from "../utils/sendToken.js"
-import { uploadFilesToCloudinary } from "../utils/features.js"
+import { emitEvent, uploadFilesToCloudinary } from "../utils/features.js"
+import { NEW_REQUEST } from "../constants/events.js"
 
 export const userTestContoller = (req,res)=>{
   res.send('hellow world')
@@ -24,7 +25,7 @@ export const newUser = async(req,res) => {
   const result = await uploadFilesToCloudinary([file]);
 
   const avatar = {
-    public_id: result[0].public_id,
+    public_id: result[0].publicId,
     url: result[0].url,
   };
   
@@ -104,7 +105,7 @@ export const sendFriendRequest = async (req, res) => {
       receiver: userId,
   });
 
-  // emitEvent(req, NEW_REQUEST, [userId]);
+  emitEvent(req, NEW_REQUEST, [userId]);
   return res.status(200).json({ success: true, message: 'Friend request sent' });
 };
 

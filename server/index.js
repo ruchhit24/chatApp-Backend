@@ -21,6 +21,8 @@ dotenv.config()
 
 const server = express();
 
+ 
+
 const PORT = 8000;
 
 const corsOptions =  {
@@ -64,6 +66,7 @@ const userSocketIds = new Map(); // Initialize a Map to store user socket IDs
 
 const server2 = createServer(server);
 const io = new Server(server2,{cors : corsOptions} );
+server.set("io",io);
 
 io.use((socket, next) => {
     cookieParser()(
@@ -142,4 +145,4 @@ server2.listen(PORT,()=>{
     console.log(`server is listening at port =${PORT} `)
 })
 
-export {userSocketIds}
+export {userSocketIds , io}

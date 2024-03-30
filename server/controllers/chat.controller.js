@@ -1,7 +1,8 @@
+import { NEW_MESSAGE, NEW_MESSAGE_ALERT } from "../constants/events.js";
 import { Chat } from "../models/chat.model.js";
 import { Message } from "../models/message.model.js";
 import { User } from "../models/user.model.js";
-import { deleteFilesFromCloudinary } from "../utils/features.js";
+import { deleteFilesFromCloudinary, emitEvent, uploadFilesToCloudinary } from "../utils/features.js";
 // import { ALERT, REFETCH_CHATS } from '../constants/socketEvents.js';
 
 export const newGroupChat = async (req, res, next) => {
@@ -252,8 +253,10 @@ export const sendAttachments = async (req, res, next) => {
     if (files.length < 1)
       return res.status(400).json({ message: "Please provide attachments" });
 
-    console.log(files);
-    const attachments = [];
+    console.log('files = ',files);
+    const attachments = await uploadFilesToCloudinary(files);
+
+    console.log('attachements = ',attachments)
 
     // Prepare message object for database
     const messageForDb = {
@@ -277,8 +280,12 @@ export const sendAttachments = async (req, res, next) => {
     const message = await Message.create(messageForDb);
 
     // Emit events for real-time messaging
-    // emitEvent(req, NEW_ATTACHMENT, chat.members, { message: messageForRealTime, chatId });
-    // emitEvent(req, NEW_MESSAGE_ALERT, chat.members, { chatId });
+    emitEvent(req, NEW_MESSAGE, chat.members, {
+      message: messageForRealTime,
+      chatId,
+    });
+  
+    emitEvent(req, NEW_MESSAGE_ALERT, chat.members, { chatId });
 
     return res.status(201).json({ success: true, message });
   } catch (error) {

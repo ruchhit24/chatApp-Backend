@@ -11,11 +11,15 @@ import { toast } from 'react-hot-toast';
 import { userNotExists } from '../redux/reducers/auth.js';
 import { server } from '../constants/config.js';
 import { setIsNewGroup, setIsNotification, setIsSearch } from '../redux/reducers/misc';
+import { resetNotificationCount } from '../redux/reducers/chat';
+import { Badge } from '@mui/material';
 
 
 const Header = () => { 
  
   const dispatch = useDispatch();
+
+  const { notificationCount } = useSelector((state) => state.chat);
  
   const { isSearch, isNotification, isNewGroup } = useSelector(
     (state) => state.misc
@@ -29,6 +33,7 @@ const Header = () => {
 
   const openNotification = () => {
     dispatch(setIsNotification(true)); 
+    dispatch(resetNotificationCount());
   };
 
 
@@ -55,7 +60,14 @@ const Header = () => {
           <Link to={'/groups'}>
           <FaUserGroup className='text-white w-6 h-6 cursor-pointer hover:text-gray-500'/>
           </Link>
-          <Notification onClick={openNotification}/>
+          {notificationCount ? (
+          <Badge badgeContent={notificationCount} color="error">
+          <Notification onClick={openNotification} />
+          </Badge>
+        ) : (
+          <Notification onClick={openNotification} />
+        )}
+           
          <PiSignOutBold className='text-white w-6 h-6 cursor-pointer hover:text-gray-500' onClick={logoutHandler}/>
          
       </div>

@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useCallback, useEffect } from "react";
 import Header from "./Header";
 import ChatList from "./ChatList"; 
 import Profile from "./Profile"; 
@@ -8,6 +8,9 @@ import { useParams } from "react-router-dom";
 import { toast } from "react-hot-toast";
 import { useSocket } from "../socket";
 import Chat from "../pages/Chat";
+import { NEW_REQUEST } from "../constants/events";
+import { useDispatch } from "react-redux";
+import { incrementNotification } from "../redux/reducers/chat";
  
 
 const AppLayout = (props) => { // Removed the higher-order component wrapper
@@ -16,6 +19,8 @@ const AppLayout = (props) => { // Removed the higher-order component wrapper
   
   const params = useParams();
   const { chatId } = params;
+
+  const dispatch  = useDispatch()
 
   // console.log('chatid',chatId)
   // console.log('data = ',data)
@@ -32,6 +37,15 @@ const AppLayout = (props) => { // Removed the higher-order component wrapper
     e.preventDefault();
     console.log(`clicked groupchat ${groupChat} and id = ${_id}`);
   };
+
+  const newRequestListener = useCallback(() => {
+    dispatch(incrementNotification());
+  }, [dispatch]);
+
+  useEffect(() => { 
+    socket.on(NEW_REQUEST,newRequestListener);
+    return () => { socket.off(NEW_REQUEST,newRequestListener); };
+ } , [] );
   
   return (
     <div className="w-full min-h-screen relative">
