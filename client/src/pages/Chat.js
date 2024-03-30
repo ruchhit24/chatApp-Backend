@@ -58,13 +58,18 @@ const Chat = () => {
 
   const newMessageHandler = useCallback((data) => { 
       console.log(data);
+
+      if(data.chatId !== chatId)
+      {
+        return;
+      }
       setMessages((prev) => [...prev, data.message]);
-    } ,[] );
+    } ,[chatId] );
 
 useEffect(() => { 
    socket.on(NEW_MESSAGE,newMessageHandler);
    return () => { socket.off(NEW_MESSAGE,newMessageHandler); };
-} , [] );
+} , [chatId] );
 
 const [page, setPage] = useState(1);
 const oldMessagesChunk = useGetMessagesQuery({ chatId, page });
@@ -88,6 +93,16 @@ const handleFileOpen = (e) => {
   dispatch(setIsFileMenu(true));
   setFileMenuAnchor(e.currentTarget);
 };
+
+useEffect(() => { 
+
+  return () => {
+    setMessages([]);
+    setMessage("");
+    setData([]);
+    setPage(1); 
+  };
+}, [chatId]);
 
 
   return chatDetails.isLoading ? (
