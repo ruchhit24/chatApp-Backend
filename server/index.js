@@ -9,7 +9,7 @@ import {router as chatRouter} from './routes/chat.route.js';
 // import { createUser } from './seeders/user.js';
 import {Server} from 'socket.io'
 import {createServer} from 'http'
-import { NEW_MESSAGE, NEW_MESSAGE_ALERT } from './constants/events.js';
+import { NEW_MESSAGE, NEW_MESSAGE_ALERT, START_TYPING, STOP_TYPING } from './constants/events.js';
 import {v4 as uuid} from 'uuid'
 import { getSockets } from './utils/features.js';
 import { Message } from './models/message.model.js';
@@ -123,6 +123,19 @@ io.on("connection", (socket) => {
         await Message.create(messageForDb);
         console.log("saved to db")
     });
+
+    //NEW EVENT FOR TYPING
+    socket.on(START_TYPING, ({ members, chatId }) => {
+        console.log("start-typing",chatId);
+        const membersSockets = getSockets(members);
+        io.to(membersSockets).emit(START_TYPING, { chatId });
+      });
+
+      socket.on(STOP_TYPING, ({ members, chatId }) => {
+        console.log("stop-typing",chatId);
+          const membersSockets = getSockets(members);
+          io.to(membersSockets).emit(STOP_TYPING, { chatId });
+        });
 
     socket.on("disconnect", () => {
         console.log("User disconnected");
