@@ -172,6 +172,8 @@ const Chat = () => {
     };
   }, [chatId]);
 
+ 
+
   return chatDetails.isLoading ? (
     <Skeleton />
   ) : (
