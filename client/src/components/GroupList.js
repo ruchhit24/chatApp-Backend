@@ -7,7 +7,7 @@ const GroupList = ({ myGroups=[] , chatId }) => {
      {
         myGroups.length > 0 ? (
             myGroups.map((group) => <GroupItem group={group} chatId={chatId} key={group._id}/>)
-        ) : (<p>Nogroups</p>) 
+        ) : (<p>No Groups</p>) 
      }
     </div>
   )

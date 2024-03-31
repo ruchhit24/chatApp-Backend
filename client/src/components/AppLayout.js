@@ -4,11 +4,11 @@ import ChatList from "./ChatList";
 import Profile from "./Profile"; 
 import { useMyChatsQuery } from "../redux/api/api";
 import { Skeleton } from "@mui/material";
-import { useParams } from "react-router-dom"; 
+import { useNavigate, useParams } from "react-router-dom"; 
 import { toast } from "react-hot-toast";
 import { useSocket } from "../socket";
 import Chat from "../pages/Chat";
-import { NEW_MESSAGE_ALERT, NEW_REQUEST } from "../constants/events";
+import { NEW_MESSAGE_ALERT, NEW_REQUEST, REFETCH_CHATS } from "../constants/events";
 import { useDispatch, useSelector } from "react-redux";
 import { incrementNotification, setNewMessagesAlert } from "../redux/reducers/chat";
 import { saveToLocalStorage } from "../lib/Features";
@@ -21,12 +21,12 @@ const AppLayout = (props) => { // Removed the higher-order component wrapper
   const params = useParams();
   const { chatId } = params;
 
-  const dispatch  = useDispatch()
+  const dispatch  = useDispatch() 
 
   const { newMessagesAlert } = useSelector((state) => state.chat);
 
   // console.log('chatid',chatId)
-  // console.log('data = ',data)
+  console.log('data = ',data)
 
   const socket = useSocket();
   // console.log('socket',socket)
@@ -65,6 +65,14 @@ useEffect(() => {
 useEffect(() => {
   saveToLocalStorage({ key: NEW_MESSAGE_ALERT, value: newMessagesAlert });
 }, [newMessagesAlert]);
+
+const refetchListener= useCallback(() => {
+  refetch();   
+}, [refetch]);
+useEffect(() => { 
+  socket.on(REFETCH_CHATS,refetchListener);
+  return () => { socket.off(REFETCH_CHATS,refetchListener); };
+} , [refetch] );
   
   return (
     <div className="w-full min-h-screen relative">

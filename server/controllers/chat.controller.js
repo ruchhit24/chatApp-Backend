@@ -1,4 +1,4 @@
-import { NEW_MESSAGE, NEW_MESSAGE_ALERT } from "../constants/events.js";
+import { ALERT, NEW_MESSAGE, NEW_MESSAGE_ALERT, REFETCH_CHATS } from "../constants/events.js";
 import { Chat } from "../models/chat.model.js";
 import { Message } from "../models/message.model.js";
 import { User } from "../models/user.model.js";
@@ -22,6 +22,9 @@ export const newGroupChat = async (req, res, next) => {
   });
 
   // NOTE: after this we will create a socket event here, we willl define an ALERT to all the menbers of the group, second event we will hv is REFETCH_CHATS
+
+  emitEvent(req, ALERT, allMembers, `Welcome to ${name} group`);
+  emitEvent(req, REFETCH_CHATS, members);
 
   return res.status(201).json({ success: true, message: "group created" });
 };
@@ -333,7 +336,7 @@ export const renameGroup = async (req, res) => {
   chat.name = name;
   await chat.save();
 
-//   emitEvenets(req, REFTCH_CHATS, chat.members);
+  emitEvent(req, REFETCH_CHATS, chat.members);
 
   return res
     .status(200)

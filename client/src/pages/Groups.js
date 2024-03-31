@@ -12,6 +12,8 @@ import Typography from "@mui/material/Typography";
 import Modal from "@mui/material/Modal";
 
 import { IoIosAddCircle } from "react-icons/io";
+import { useChatDetailsQuery, useMyGroupsQuery, useRenameGroupMutation } from "../redux/api/api";
+import { toast } from "react-hot-toast";
 
 const style = {
   position: "absolute",
@@ -39,42 +41,99 @@ const Groups = () => {
   const handleClose = () => setOpen(false);
   const handleOpenDelete = () => setOpenDelete(true);
   const handleCloseDelete = () => setOpenDelete(false);
-  const [members,setMembers] = useState(SampleUser)
+  // const [members,setMembers] = useState(SampleUser)
   const[selectMember , setSelectMember] = useState([])
   console.log(selectMember)
+
+  
+const [members, setMembers] = useState([]); 
+
+  const myGroups = useMyGroupsQuery("");
+
+  console.log('mygroups',myGroups)
+
+  const groupDetails = useChatDetailsQuery(
+    { chatId, populate: true },
+    { skip: !chatId }
+);
+
+ const [ renameGroup ] = useRenameGroupMutation();
+
+ const renameGroupHandler = async (name, chatDetails) => {
+  try {
+    const res = await renameGroup({
+      chatId,
+      name: newGroupName,
+    });
+    console.log(res);
+
+    if (res.data) {
+      toast.success("Group name Updated !!")
+    } else {
+      toast.error(res?.error?.data?.message || "Something went wrong");
+    }
+  } catch (error) {
+    console.log(error);
+    toast.error("Something went wrong");
+  }
+};
+
+const updateGroupName = () => {
+  setIsEditt(false);
+  setGroupName(newGroupName);
+  renameGroupHandler({
+    chatId,
+    name: newGroupName,
+  });
+};
+
+
+
 
   const selectMemberHandler = (id)=>{
     // TODO : NEED TO COMPLETE IT
  setSelectMember ((prev) => prev.includes(id) ? prev.filter((currElement)=> currElement !== id) : [...prev , id])
   }
 
-  useEffect(() => {
-     if(chatId)
-    {
-      setGroupName(`Group Name = ${chatId}`);
-      setNewGroupName(`Group Name = ${chatId}`);
-    }
+  // useEffect(() => {
+  //    if(chatId)
+  //   {
+  //     setGroupName(`Group Name = ${chatId}`);
+  //     setNewGroupName(`Group Name = ${chatId}`);
+  //   }
 
-    return ()=>{
-        setGroupName('')
-        setNewGroupName('')
-    }
-  }, [chatId]);
+  //   return ()=>{
+  //       setGroupName('')
+  //       setNewGroupName('')
+  //   }
+  // }, [chatId]);
 
-  const editHandler = () => {
-    setIsEditt(false);
-    setGroupName(newGroupName);
-  };
-
+ 
 
 const addMemberSubmitHandler = ()=>{
 
 }
 
+useEffect(() => {
+  const groupData = groupDetails.data;
+  if (groupData) {
+    setGroupName(groupData.chat.name);
+    setNewGroupName(groupData.chat.name);
+    setMembers(groupData.chat.members);
+  }
+
+  return () => {
+    setGroupName("");
+    setNewGroupName("");
+    setMembers([]);
+    setIsEditt(false);
+  };
+}, [groupDetails.data]);
+
   return (
     <div className="grid grid-cols-12 w-full h-[100vh]" >
       <div className="grid col-span-3 bg-green-100 overflow-y-scroll">
-        <GroupList myGroups={SampleData} chatId={chatId} />
+        <GroupList myGroups={myGroups?.data?.groups} chatId={chatId} />
       </div>
 
       <div className="grid col-span-9 h-full relative">
@@ -95,7 +154,7 @@ const addMemberSubmitHandler = ()=>{
               />
               <TiTick
                 className="w-8 h-8 text-green-700"
-                onClick={editHandler}
+                onClick={updateGroupName}
               />
             </div>
           ) : (
@@ -124,9 +183,9 @@ const addMemberSubmitHandler = ()=>{
               <div className="w-full min-h-screen relative flex items-center justify-center">
             <div className="w-[30vw] absolute top-[65%] left-[4050%] h-[60vh] p-3">
               <h1 className="text-center text-xl font-semibold">Members</h1>
-              <div className="w-full h-[80%] bg-green-600 mt-4"> 
-                    {users &&
-                      users.map((user) => (
+              <div className="w-full h-[80%] mt-4"> 
+                    {members &&
+                      members.map((user) => (
                         <div
                           key={user._id}
                           className="flex justify-between items-center mt-4 p-3 border-b-[1px] border-gray-300"
