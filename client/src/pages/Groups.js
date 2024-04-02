@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { IoMdArrowBack } from "react-icons/io";
+import { IoIosRemoveCircle, IoMdArrowBack } from "react-icons/io";
 import { Link, useSearchParams } from "react-router-dom";
 import GroupList from "../components/GroupList";
 import { SampleData } from "../utils/SampleData";
@@ -12,7 +12,7 @@ import Typography from "@mui/material/Typography";
 import Modal from "@mui/material/Modal";
 
 import { IoIosAddCircle } from "react-icons/io";
-import { useChatDetailsQuery, useMyGroupsQuery, useRenameGroupMutation } from "../redux/api/api";
+import { useChatDetailsQuery, useMyGroupsQuery, useRemoveGroupMemberMutation, useRenameGroupMutation} from "../redux/api/api";
 import { toast } from "react-hot-toast";
 
 const style = {
@@ -57,7 +57,7 @@ const [members, setMembers] = useState([]);
     { skip: !chatId }
 );
 
- const [ renameGroup ] = useRenameGroupMutation();
+ const [ renameGroup ] = useRenameGroupMutation();  
 
  const renameGroupHandler = async (name, chatDetails) => {
   try {
@@ -78,6 +78,7 @@ const [members, setMembers] = useState([]);
   }
 };
 
+
 const updateGroupName = () => {
   setIsEditt(false);
   setGroupName(newGroupName);
@@ -87,6 +88,31 @@ const updateGroupName = () => {
   });
 };
 
+
+
+const [removeMember] =useRemoveGroupMemberMutation( );
+
+const removeMemberHandler = async(userId) => {
+  try {
+    const res = await removeMember({
+      chatId,
+      userId
+    });
+    console.log(res);
+
+    if (res.data) {
+      toast.success("Group Member Removed !!")
+    } else {
+      toast.error(res?.error?.data?.message || "Something went wrong");
+    }
+  } catch (error) {
+    console.log(error);
+    toast.error("Something went wrong");
+  }
+};
+
+
+  // removeMember("Removing Member...", { chatId, userId });
 
 
 
@@ -198,7 +224,7 @@ useEffect(() => {
                             />
                             <h1>{user.name}</h1>
                           </div>
-                          <IoIosAddCircle className="text-cyan-500 w-7 h-7" />
+                          <IoIosRemoveCircle className="text-red-600 w-7 h-7" onClick={() => removeMemberHandler(user._id)} />
                         </div>
                       ))} 
               </div>
