@@ -12,8 +12,11 @@ import Typography from "@mui/material/Typography";
 import Modal from "@mui/material/Modal";
 
 import { IoIosAddCircle } from "react-icons/io";
-import { useChatDetailsQuery, useMyGroupsQuery, useRemoveGroupMemberMutation, useRenameGroupMutation} from "../redux/api/api";
+import { useAddGroupMembersMutation, useAvailableFriendsQuery, useChatDetailsQuery, useMyGroupsQuery, useRemoveGroupMemberMutation, useRenameGroupMutation} from "../redux/api/api";
 import { toast } from "react-hot-toast";
+import { useDispatch, useSelector } from "react-redux";
+import { setIsAddMember } from "../redux/reducers/misc";
+import { Skeleton } from "@mui/material";
 
 const style = {
   position: "absolute",
@@ -29,7 +32,7 @@ const style = {
 
 const Groups = () => {
   const chatId = useSearchParams()[0].get("group");
-  console.log(chatId);
+  // console.log(chatId);
 
   const [users, setUsers] = useState(SampleUser);
   const [groupName, setGroupName] = useState("");
@@ -42,15 +45,19 @@ const Groups = () => {
   const handleOpenDelete = () => setOpenDelete(true);
   const handleCloseDelete = () => setOpenDelete(false);
   // const [members,setMembers] = useState(SampleUser)
-  const[selectMember , setSelectMember] = useState([])
-  console.log(selectMember)
+  const[selectedMembers , setSelectedMembers] = useState([])
+  // console.log(selectedMembers)
 
   
+  const dispatch = useDispatch();
+  const { isAddMember } = useSelector((state) => state.misc);
+
+
 const [members, setMembers] = useState([]); 
 
   const myGroups = useMyGroupsQuery("");
 
-  console.log('mygroups',myGroups)
+  // console.log('mygroups',myGroups)
 
   const groupDetails = useChatDetailsQuery(
     { chatId, populate: true },
@@ -118,7 +125,7 @@ const removeMemberHandler = async(userId) => {
 
   const selectMemberHandler = (id)=>{
     // TODO : NEED TO COMPLETE IT
- setSelectMember ((prev) => prev.includes(id) ? prev.filter((currElement)=> currElement !== id) : [...prev , id])
+ setSelectedMembers((prev) => prev.includes(id) ? prev.filter((currElement)=> currElement !== id) : [...prev , id])
   }
 
   // useEffect(() => {
@@ -133,28 +140,51 @@ const removeMemberHandler = async(userId) => {
   //       setNewGroupName('')
   //   }
   // }, [chatId]);
+  useEffect(() => {
+    const groupData = groupDetails.data;
+    if (groupData) {
+      setGroupName(groupData.chat.name);
+      setNewGroupName(groupData.chat.name);
+      setMembers(groupData.chat.members);
+    }
+  
+    return () => {
+      setGroupName("");
+      setNewGroupName("");
+      setMembers([]);
+      setIsEditt(false);
+    };
+  }, [groupDetails.data]);
 
- 
 
-const addMemberSubmitHandler = ()=>{
+  const [addMembers] = useAddGroupMembersMutation();
+  const { isLoading, data, isError, error } = useAvailableFriendsQuery(chatId);
 
-}
 
-useEffect(() => {
-  const groupData = groupDetails.data;
-  if (groupData) {
-    setGroupName(groupData.chat.name);
-    setNewGroupName(groupData.chat.name);
-    setMembers(groupData.chat.members);
-  }
-
-  return () => {
-    setGroupName("");
-    setNewGroupName("");
-    setMembers([]);
-    setIsEditt(false);
+const addMemberSubmitHandler = async(selectedMembers,chatId)=>
+  {
+    try {
+      const res = await addMembers({ members: selectedMembers, chatId });
+      console.log(res);
+  
+      if (res.data) {
+        toast.success("Group Member Added!!")
+      } else {
+        toast.error(res?.error?.data?.message || "Something went wrong");
+      }
+    } catch (error) {
+      console.log(error);
+      toast.error("Something went wrong");
+    }
   };
-}, [groupDetails.data]);
+
+  const openAddMemberHandler = () => {
+    dispatch(setIsAddMember(true));
+  };
+
+const closeAddMemberHandler = () => {
+  dispatch (setIsAddMember(false) );
+}
 
   return (
     <div className="grid grid-cols-12 w-full h-[100vh]" >
@@ -207,7 +237,8 @@ useEffect(() => {
            {
             chatId && (
               <div className="w-full min-h-screen relative flex items-center justify-center">
-            <div className="w-[30vw] absolute top-[65%] left-[4050%] h-[60vh] p-3">
+            
+              <div className="w-[30vw] absolute top-[65%] left-[4050%] h-[60vh] p-3">
               <h1 className="text-center text-xl font-semibold">Members</h1>
               <div className="w-full h-[80%] mt-4"> 
                     {members &&
@@ -232,7 +263,7 @@ useEffect(() => {
               <div className="flex justify-between p-3">
                 <button
                   className="px-4 py-2 border-gray-400 border-[1px] bg-cyan-700 text-white font-semibold rounded-lg cursor-pointer"
-                  onClick={handleOpen}
+                  onClick={openAddMemberHandler}
                 >
                   <span className="text-white font-bold">+</span> Add Members
                 </button>
@@ -240,7 +271,7 @@ useEffect(() => {
                   className="flex gap-2 items-center px-4 py-2 border-red-400 border-[1px] bg-white text-red-600 font-semibold rounded-lg cursor-pointer"
                   onClick={handleOpenDelete}
                 >
-                  <span className="text-red-600">
+                  <span className="text-red-700">
                     <MdDelete />
                   </span>
                   Delete Group
@@ -251,11 +282,11 @@ useEffect(() => {
             )
            }
 
-          {open && (
+          {isAddMember && (
             <div>
               <Modal
-                open={open}
-                onClose={handleClose}
+                open={isAddMember}
+                onClose={closeAddMemberHandler}
                 aria-labelledby="modal-modal-title"
                 aria-describedby="modal-modal-description"
               >
@@ -269,8 +300,10 @@ useEffect(() => {
                     Add Members
                   </Typography>
                   <Typography id="modal-modal-description" sx={{ mt: 2 }}>
-                    {users &&
-                      users.map((user) => (
+                  {isLoading ? (
+            <Skeleton />
+          ) : data?.friends?.length > 0 ? (
+            data?.friends?.map((user) => (
                         <div
                           key={user._id}
                           className="flex justify-between items-center mt-4 p-3 border-b-[1px] border-gray-300"
@@ -283,16 +316,24 @@ useEffect(() => {
                             />
                             <h1>{user.name}</h1>
                           </div>
-                          <IoIosAddCircle className="text-cyan-500 w-7 h-7" onClick={() => selectMemberHandler} />
-                        </div>
-                      ))}
+                          <div onClick={() => selectMemberHandler(user._id)}>
+                  {selectedMembers.includes(user._id) ? (
+                    <IoIosRemoveCircle className="text-red-700 w-7 h-7" />
+                  ) : (
+                    <IoIosAddCircle className="text-cyan-500 w-7 h-7" />
+                  )}
+                </div>
+                         </div>
+                      ))): (
+                        
+            <Typography textAlign={"center"}>No Friends</Typography>
+                      )}
                   </Typography>
                   <div className="flex justify-between p-3">
                     <button className="px-4 py-2 border-red-400 border-[1px] bg-white text-red-600 font-semibold rounded-lg cursor-pointer">
                       Cancel
                     </button>
-                    <button className="flex gap-2 items-center px-4 py-2 border-gray-400 border-[1px] bg-cyan-700 text-white font-semibold rounded-lg cursor-pointer" onClick={addMemberSubmitHandler}>
-                      
+                    <button className="flex gap-2 items-center px-4 py-2 border-gray-400 border-[1px] bg-cyan-700 text-white font-semibold rounded-lg cursor-pointer" onClick = {()=> addMemberSubmitHandler(selectedMembers,chatId)}>  
                       Submit Changes
                     </button>
                   </div>
