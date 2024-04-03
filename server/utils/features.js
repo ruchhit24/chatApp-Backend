@@ -7,7 +7,7 @@ const getBase64 = (file) =>
 `data:${file.mimetype};base64,${file.buffer.toString("base64")}`;
 
 
-export const deleteFilesFromCloudinary= (public_ids)=>{
+export const deleteFilesFromCloudinary= async(public_ids)=>{
 console.log("files deleted")
 }
 

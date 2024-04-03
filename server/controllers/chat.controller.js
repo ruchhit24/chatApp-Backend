@@ -4,6 +4,8 @@ import { Message } from "../models/message.model.js";
 import { User } from "../models/user.model.js";
 import { deleteFilesFromCloudinary, emitEvent, uploadFilesToCloudinary } from "../utils/features.js";
 // import { ALERT, REFETCH_CHATS } from '../constants/socketEvents.js';
+import mongoose from "mongoose";
+const { ObjectId } = mongoose.Types;
 
 export const newGroupChat = async (req, res, next) => {
   const { name, members } = req.body;
@@ -346,11 +348,22 @@ export const renameGroup = async (req, res) => {
 export const deleteGroup = async (req, res) => {
     try {
         const chatId = req.params.id;
+        console.log('chatid',chatId)
+
+          // Validate chatId to ensure it's a valid ObjectId
+if (!ObjectId.isValid(chatId)) {
+  return res.status(400).json({ message: 'Invalid chat ID' });
+}
+
+
         const chat = await Chat.findById(chatId);
+        console.log('chat = ',chat)
 
         if (!chat) {
             return res.status(404).json({ message: 'Chat not found' }); // Return a response instead of empty string
         }
+
+        const members = chat.members;
 
         if (chat.groupChat && chat.creator.toString() !== req.user.toString()) {
             return res.status(403).json({ message: 'You are not allowed to delete this group' }); // Return a response instead of string
@@ -369,16 +382,18 @@ export const deleteGroup = async (req, res) => {
             });
         });
 
-        // Assuming 'deleteFilesFromCloudinary' is defined and working correctly
+        console.log('public ids = ',public_ids)
         await deleteFilesFromCloudinary(public_ids);
         await chat.deleteOne();
         await Message.deleteMany({ chat: chatId });
+
+        emitEvent(req, REFETCH_CHATS, members);
 
         return res.status(200).json({ success: true, message: 'Group deleted successfully' }); // Return a success message
     } catch (error) {
         // Handle errors
         console.error(error);
-        return res.status(500).json({ success: false, message: 'Internal server error' });
+        return res.status(500).json({ success: false, message: 'Internal server errorzz' });
     }
 };
 

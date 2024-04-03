@@ -182,6 +182,7 @@ export const getMyFriends = async (req, res) => {
 
       if (chatId) {
           const chat = await Chat.findById(chatId);
+          console.log('use ki chats = ',chat)
 
           const availableFriends = friends.filter((friend) => 
               !chat.members.includes(friend._id)
