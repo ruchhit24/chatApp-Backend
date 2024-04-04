@@ -262,9 +262,9 @@ const Groups = () => {
                 <h1 className="text-center text-xl font-semibold">Members</h1>
                 <div className="w-full h-[80%] mt-4 overflow-y-scroll">
                   {members &&
-                    members.map((user) => (
+                    members.map((user,index) => (
                       <div
-                        key={user._id}
+                        key={index}
                         className="flex justify-between items-center mt-4 p-3 border-b-[1px] border-gray-300"
                       >
                         <div className="flex gap-5 items-center text-lg">
@@ -325,9 +325,9 @@ const Groups = () => {
                     {isLoading ? (
                       <Skeleton />
                     ) : data?.friends?.length > 0 ? (
-                      data?.friends?.map((user) => (
+                      data?.friends?.map((user,index) => (
                         <div
-                          key={user._id}
+                          key={index}
                           className="flex justify-between items-center mt-4 p-3 border-b-[1px] border-gray-300"
                         >
                           <div className="flex gap-5 items-center text-lg">

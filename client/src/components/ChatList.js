@@ -12,7 +12,7 @@ const ChatList = ({chats=[],chatId,onlineUsers=[],newMessagesAlert=[{ chatId:'',
           ({ chatId }) => chatId === _id
         );
                return (
-                <ChatItem avatar={avatar}  _id={_id} name={name}  groupChat={groupChat}  members={members} sameSender={chatId === _id} key={ _id } isOnline={isOnline} newMessageAlert={newMessageAlert}/>
+                <ChatItem avatar={avatar}  _id={_id} name={name}  groupChat={groupChat}  members={members} sameSender={chatId === _id} key={ _id } isOnline={isOnline} newMessageAlert={newMessageAlert} handleDeleteChat={handleDeleteChat}/>
                )  
         })
         }

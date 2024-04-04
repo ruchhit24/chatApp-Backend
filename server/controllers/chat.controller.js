@@ -1,8 +1,17 @@
-import { ALERT, NEW_MESSAGE, NEW_MESSAGE_ALERT, REFETCH_CHATS } from "../constants/events.js";
+import {
+  ALERT,
+  NEW_MESSAGE,
+  NEW_MESSAGE_ALERT,
+  REFETCH_CHATS,
+} from "../constants/events.js";
 import { Chat } from "../models/chat.model.js";
 import { Message } from "../models/message.model.js";
 import { User } from "../models/user.model.js";
-import { deleteFilesFromCloudinary, emitEvent, uploadFilesToCloudinary } from "../utils/features.js";
+import {
+  deleteFilesFromCloudinary,
+  emitEvent,
+  uploadFilesToCloudinary,
+} from "../utils/features.js";
 // import { ALERT, REFETCH_CHATS } from '../constants/socketEvents.js';
 import mongoose from "mongoose";
 const { ObjectId } = mongoose.Types;
@@ -238,14 +247,14 @@ export const sendAttachments = async (req, res, next) => {
   try {
     const { chatId } = req.body;
 
-     // Check if attachments are provided
+    // Check if attachments are provided
 
-    const files = req.files || []
+    const files = req.files || [];
     if (files.length < 1)
-    return res.status(400).json({ message: "Please provide attachments" });
+      return res.status(400).json({ message: "Please provide attachments" });
 
     if (files.length > 5)
-    return res.status(400).json({ message: "files can't be more than 5" });
+      return res.status(400).json({ message: "files can't be more than 5" });
 
     // Find the chat and the current user
     const chat = await Chat.findById(chatId);
@@ -253,15 +262,14 @@ export const sendAttachments = async (req, res, next) => {
 
     // Check if the chat exist
     if (!chat) return res.status(400).json({ message: "Chat not found" });
- 
 
     if (files.length < 1)
       return res.status(400).json({ message: "Please provide attachments" });
 
-    console.log('files = ',files);
+    console.log("files = ", files);
     const attachments = await uploadFilesToCloudinary(files);
 
-    console.log('attachements = ',attachments)
+    console.log("attachements = ", attachments);
 
     // Prepare message object for database
     const messageForDb = {
@@ -289,7 +297,7 @@ export const sendAttachments = async (req, res, next) => {
       message: messageForRealTime,
       chatId,
     });
-  
+
     emitEvent(req, NEW_MESSAGE_ALERT, chat.members, { chatId });
 
     return res.status(201).json({ success: true, message });
@@ -346,79 +354,98 @@ export const renameGroup = async (req, res) => {
 };
 
 export const deleteGroup = async (req, res) => {
-    try {
-        const chatId = req.params.id;
-        console.log('chatid',chatId)
+  try {
+    const chatId = req.params.id;
+    console.log("chatid", chatId);
 
-          // Validate chatId to ensure it's a valid ObjectId
-if (!ObjectId.isValid(chatId)) {
-  return res.status(400).json({ message: 'Invalid chat ID' });
-}
-
-
-        const chat = await Chat.findById(chatId);
-        console.log('chat = ',chat)
-
-        if (!chat) {
-            return res.status(404).json({ message: 'Chat not found' }); // Return a response instead of empty string
-        }
-
-        const members = chat.members;
-
-        if (chat.groupChat && chat.creator.toString() !== req.user.toString()) {
-            return res.status(403).json({ message: 'You are not allowed to delete this group' }); // Return a response instead of string
-        }
-
-        const messagesWithAttachments = await Message.find({
-            chat: chatId,
-            attachments: { $exists: true, $ne: [] }, // Corrected syntax for existence and non-empty check
-        });
-
-        const public_ids = [];
-
-        messagesWithAttachments.forEach((message) => {
-            message.attachments.forEach((attachment) => {
-                public_ids.push(attachment.publicId); // Corrected property name
-            });
-        });
-
-        console.log('public ids = ',public_ids)
-        await deleteFilesFromCloudinary(public_ids);
-        await chat.deleteOne();
-        await Message.deleteMany({ chat: chatId });
-
-        emitEvent(req, REFETCH_CHATS, members);
-
-        return res.status(200).json({ success: true, message: 'Group deleted successfully' }); // Return a success message
-    } catch (error) {
-        // Handle errors
-        console.error(error);
-        return res.status(500).json({ success: false, message: 'Internal server errorzz' });
+    // Validate chatId to ensure it's a valid ObjectId
+    if (!ObjectId.isValid(chatId)) {
+      return res.status(400).json({ message: "Invalid chat ID" });
     }
+
+    const chat = await Chat.findById(chatId);
+    console.log("chat = ", chat);
+
+    if (!chat) {
+      return res.status(404).json({ message: "Chat not found" }); // Return a response instead of empty string
+    }
+
+    const members = chat.members;
+
+    if (chat.groupChat && chat.creator.toString() !== req.user.toString()) {
+      return res
+        .status(403)
+        .json({ message: "You are not allowed to delete this group" }); // Return a response instead of string
+    }
+
+    const messagesWithAttachments = await Message.find({
+      chat: chatId,
+      attachments: { $exists: true, $ne: [] }, // Corrected syntax for existence and non-empty check
+    });
+
+    const public_ids = [];
+
+    messagesWithAttachments.forEach((message) => {
+      message.attachments.forEach((attachment) => {
+        public_ids.push(attachment.publicId); // Corrected property name
+      });
+    });
+
+    console.log("public ids = ", public_ids);
+    await deleteFilesFromCloudinary(public_ids);
+    await chat.deleteOne();
+    await Message.deleteMany({ chat: chatId });
+
+    emitEvent(req, REFETCH_CHATS, members);
+
+    return res
+      .status(200)
+      .json({ success: true, message: "Group deleted successfully" }); // Return a success message
+  } catch (error) {
+    // Handle errors
+    console.error(error);
+    return res
+      .status(500)
+      .json({ success: false, message: "Internal server errorzz" });
+  }
 };
 
-export const getMessages = async (req, res) => {  
-    try {
-        const chatId = req.params.id;
-        const { page = 1 } = req.query;
-        const limit = 20;
-        const skip = (page - 1) * limit;
+export const getMessages = async (req, res) => {
+  try {
+    const chatId = req.params.id;
+    const { page = 1 } = req.query;
+    const limit = 20;
+    const skip = (page - 1) * limit;
 
-        const [messages, totalMessageCount] = await Promise.all([
-            Message.find({ chat: chatId })
-                .sort({ createdAt: -1 })
-                .skip(skip)
-                .limit(limit)
-                .populate("sender", "name avatar")
-                .lean(),
-            Message.countDocuments({ chat: chatId })
-        ]);
+    //if we r not user of the group than we must not able to see the cahts even if we hv chatID with us
+    const chat = await Chat.findById(chatId);
 
-        const totalPages = Math.ceil(totalMessageCount / limit);
-        return res.status(200).json({ success: true, messages: messages.reverse(), totalPages });
-    } catch (error) {
-        // Handle errors
-        console.error(error);
-        return res.status(500).json({ success: false, message: 'Internal server error' });
-    }
+    if (!chat) return res.status(404).json({ message: "Chat not found" });
+
+    if (!chat.members.includes(req.user.toString()))
+      return res
+        .status(404)
+        .json({ message: "You are not allowed to access this chat" });
+
+    const [messages, totalMessageCount] = await Promise.all([
+      Message.find({ chat: chatId })
+        .sort({ createdAt: -1 })
+        .skip(skip)
+        .limit(limit)
+        .populate("sender", "name avatar")
+        .lean(),
+      Message.countDocuments({ chat: chatId }),
+    ]);
+
+    const totalPages = Math.ceil(totalMessageCount / limit);
+    return res
+      .status(200)
+      .json({ success: true, messages: messages.reverse(), totalPages });
+  } catch (error) {
+    // Handle errors
+    console.error(error);
+    return res
+      .status(500)
+      .json({ success: false, message: "Internal server error" });
+  }
 };
