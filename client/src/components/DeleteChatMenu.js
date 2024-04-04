@@ -7,7 +7,7 @@ import {
   ExitToApp as ExitToAppIcon,
 } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
-import { useDeleteChatMutation } from "../redux/api/api";
+import { useDeleteChatMutation, useLeaveGroupMutation } from "../redux/api/api";
 import { toast } from "react-hot-toast";
  
 
@@ -35,7 +35,23 @@ const DeleteChatMenu = ({ dispatch, deleteMenuAnchor }) => {
         toast.error("Something went wrong");
       }
     };
- 
+    
+    const [leaveGroup] = useLeaveGroupMutation();
+    const groupChodoHandler = async()=>{
+        try {
+            const res = await leaveGroup( selectedDeleteChat.chatId );
+            console.log(res);
+      
+            if (res.data) {
+              toast.success("Leaved from the Group!!");
+            } else {
+              toast.error(res?.error?.data?.message || "Something went wrong");
+            }
+          } catch (error) {
+            console.log(error);
+            toast.error("Something went wrong");
+          }
+        };
 
   const isGroup = selectedDeleteChat.groupChat;
 
@@ -46,12 +62,15 @@ const DeleteChatMenu = ({ dispatch, deleteMenuAnchor }) => {
 
   const leaveGroupHandler = () => {
     closeHandler();
+    groupChodoHandler();
+    navigate("/")
     
   };
 
   const deleteChatHandler = () => {
     closeHandler();
-    unfriendHandler() 
+    unfriendHandler();
+    navigate("/")
   };
 
  

@@ -232,12 +232,12 @@ export const leaveGroup = async (req, res, next) => {
 
     console.log(`${user.name} has left the group`);
     // Emitting events
-    // emitEvent(req, ALERT, chat.members, `${user.name} has left the group`);
-    // emitEvent(req, REFETCH_CHATS, chat.members);
+    emitEvent(req, ALERT, chat.members, `${user.name} has left the group`);
+    emitEvent(req, REFETCH_CHATS, chat.members);
 
     return res
       .status(201)
-      .json({ success: true, message: "Member removed successfully" });
+      .json({ success: true, message: "Leaved Group Successfully!!" });
   } catch (error) {
     next(error);
   }
