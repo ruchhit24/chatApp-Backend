@@ -9,7 +9,7 @@ import {router as chatRouter} from './routes/chat.route.js';
 // import { createUser } from './seeders/user.js';
 import {Server} from 'socket.io'
 import {createServer} from 'http'
-import { NEW_MESSAGE, NEW_MESSAGE_ALERT, START_TYPING, STOP_TYPING } from './constants/events.js';
+import { CHAT_JOINED, CHAT_LEAVED, NEW_MESSAGE, NEW_MESSAGE_ALERT, ONLINE_USERS, START_TYPING, STOP_TYPING } from './constants/events.js';
 import {v4 as uuid} from 'uuid'
 import { getSockets } from './utils/features.js';
 import { Message } from './models/message.model.js';
@@ -63,6 +63,8 @@ mongoose.connect(process.env.MONGO_URI)
 
 const user = { _id: 'sjnvd88', name: 'jack' };
 const userSocketIds = new Map(); // Initialize a Map to store user socket IDs
+const onlineUsers = new Set();
+console.log('online users = ',onlineUsers)
 
 const server2 = createServer(server);
 const io = new Server(server2,{cors : corsOptions} );
@@ -137,10 +139,28 @@ io.on("connection", (socket) => {
           io.to(membersSockets).emit(STOP_TYPING, { chatId });
         });
 
+        socket.on(CHAT_JOINED, ({ userId, members }) => {
+          onlineUsers.add(userId.toString());
+      
+          const membersSocket = getSockets(members);
+          console.log('online users joined = ',onlineUsers)
+          io.to(membersSocket).emit(ONLINE_USERS, Array.from(onlineUsers));
+        });
+
+        socket.on(CHAT_LEAVED, ({ userId, members }) => {
+          onlineUsers.delete(userId.toString());
+      
+          const membersSocket = getSockets(members);
+          console.log('online users leaved = ',onlineUsers)
+          io.to(membersSocket).emit(ONLINE_USERS, Array.from(onlineUsers));
+        });
+
     socket.on("disconnect", () => {
         console.log("User disconnected");
         // Remove user's socket ID on disconnect
         userSocketIds.delete(_id.toString());
+        onlineUsers.delete(user._id.toString());
+        socket.broadcast.emit(ONLINE_USERS, Array.from(onlineUsers));
     });
 });
 

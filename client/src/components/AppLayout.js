@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect , useRef } from "react";
+import React, { useCallback, useEffect , useRef, useState } from "react";
 import Header from "./Header";
 import ChatList from "./ChatList"; 
 import Profile from "./Profile"; 
@@ -8,7 +8,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "react-hot-toast";
 import { useSocket } from "../socket";
 import Chat from "../pages/Chat";
-import { NEW_MESSAGE_ALERT, NEW_REQUEST, REFETCH_CHATS } from "../constants/events";
+import { NEW_MESSAGE_ALERT, NEW_REQUEST, ONLINE_USERS, REFETCH_CHATS } from "../constants/events";
 import { useDispatch, useSelector } from "react-redux";
 import { incrementNotification, setNewMessagesAlert } from "../redux/reducers/chat";
 import { setIsDeleteMenu,setSelectedDeleteChat} from "../redux/reducers/misc";
@@ -19,6 +19,9 @@ import DeleteChatMenu from './DeleteChatMenu'
 const AppLayout = (props) => { // Removed the higher-order component wrapper
    
   const { isLoading, data, isError, error, refetch } = useMyChatsQuery("");
+
+  const [onlineUsers, setOnlineUsers] = useState([]);
+  console.log('online users applayout = ',onlineUsers)
   
   const params = useParams();
   const { chatId } = params;
@@ -28,7 +31,7 @@ const AppLayout = (props) => { // Removed the higher-order component wrapper
   const { newMessagesAlert } = useSelector((state) => state.chat);
 
   // console.log('chatid',chatId)
-  console.log('data = ',data)
+  // console.log('data = ',data)
 
   const socket = useSocket();
   // console.log('socket',socket)
@@ -80,6 +83,15 @@ useEffect(() => {
   socket.on(REFETCH_CHATS,refetchListener);
   return () => { socket.off(REFETCH_CHATS,refetchListener); };
 } , [refetch] );
+
+const onlineUsersListener = useCallback((data) => {
+  console.log('applayout ka dataaaaaaaa==',data)
+  setOnlineUsers(data);
+}, []);
+useEffect(() => { 
+  socket.on(ONLINE_USERS,onlineUsersListener);
+  return () => {socket.off(ONLINE_USERS,onlineUsersListener); };
+} ,[]);
   
   return (
     <div className="w-full min-h-screen relative">
@@ -98,6 +110,7 @@ useEffect(() => {
               chatId={chatId}
               handleDeleteChat={handleDeleteChat}
               newMessagesAlert={newMessagesAlert}
+              onlineUsers={onlineUsers}
             />
           )}
         </div>

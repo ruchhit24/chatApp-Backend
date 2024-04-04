@@ -5,7 +5,7 @@ import { IoMdSend } from "react-icons/io";
 // import { SampleMessage } from "../utils/SampleMessage";
 import MessageComponent from "../components/MessageComponent";
 import { useSocket } from "../socket";
-import { NEW_MESSAGE, START_TYPING, STOP_TYPING } from "../constants/events";
+import { CHAT_JOINED, CHAT_LEAVED, NEW_MESSAGE, START_TYPING, STOP_TYPING } from "../constants/events";
 import { useChatDetailsQuery, useGetMessagesQuery } from "../redux/api/api";
 import { Skeleton } from "@mui/material";
 import { useParams } from "react-router-dom";
@@ -173,6 +173,19 @@ const Chat = () => {
   }, [chatId]);
 
  
+  useEffect(() => {
+    socket.emit(CHAT_JOINED, { userId: user._id, members });
+    dispatch(removeNewMessagesAlert(chatId));
+
+    return () => {
+      setMessages([]);
+      setMessage("");
+      setData([]);
+      setPage(1);
+      socket.emit(CHAT_LEAVED, { userId: user._id, members });
+    };
+  }, [chatId]);
+
 
   return chatDetails.isLoading ? (
     <Skeleton />
