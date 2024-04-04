@@ -1,30 +1,47 @@
-import React, { memo } from 'react'
-import {Link} from 'react-router-dom'
+import React, { memo } from "react";
+import { Link } from "react-router-dom";
+import { motion } from "framer-motion";
 
-const ChatItem = ({ avatar,name,_id, groupChat=false ,sameSender ,isOnline=true , newMessageAlert , index=0 ,handleDeleteChat}) => {
+const ChatItem = ({
+  avatar,
+  name,
+  _id,
+  groupChat = false,
+  sameSender,
+  isOnline = true,
+  newMessageAlert,
+  index = 0,
+  handleDeleteChat,
+}) => {
   return (
-    <Link to={`/chat/${_id}`} onContextMenu={(e)=>handleDeleteChat(e,_id,groupChat)}>
-        <div className='p-3 border-b-[1px] border-gray-400 flex items-center justify-between gap-3 hover:bg-gray-300'>
-            <div className='flex items-center gap-3'>
-            <img src={avatar} alt='dj' className='w-12 h-12 object-cover rounded-full '/>
-            <div className='flex justify-between items-center gap-5'>
-                <h2>{name}</h2>
-                {
-                    newMessageAlert && (
-                        <h2 className='font-bold text-sm'>{newMessageAlert.count} New Message</h2>
-                    )
-                }
-                 
-            </div>
-            </div>
-            {
-                    isOnline && (
-                        <div className='h-2 w-2 rounded-full bg-green-800'/>
-                    )
-                }
+    <Link
+      to={`/chat/${_id}`}
+      onContextMenu={(e) => handleDeleteChat(e, _id, groupChat)}
+    >
+      <motion.div 
+        initial={{ opacity: 0, y: "-100%" }}
+        whileInView={{ opacity: 1, y: 0 }} 
+        className="p-3 border-b-[1px] border-gray-400 flex items-center justify-between gap-3 hover:bg-gray-300"
+      >
+        <div className="flex items-center gap-3">
+          <img
+            src={avatar}
+            alt="dj"
+            className="w-12 h-12 object-cover rounded-full "
+          />
+          <div className="flex justify-between items-center gap-5">
+            <h2>{name}</h2>
+            {newMessageAlert && (
+              <h2 className="font-bold text-sm">
+                {newMessageAlert.count} New Message
+              </h2>
+            )}
+          </div>
         </div>
+        {isOnline && <div className="h-2 w-2 rounded-full bg-green-800" />}
+      </motion.div>
     </Link>
-  )
-}
+  );
+};
 
-export default memo(ChatItem)
+export default memo(ChatItem);
