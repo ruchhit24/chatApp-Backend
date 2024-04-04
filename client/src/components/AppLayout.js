@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect } from "react";
+import React, { useCallback, useEffect , useRef } from "react";
 import Header from "./Header";
 import ChatList from "./ChatList"; 
 import Profile from "./Profile"; 
@@ -11,7 +11,9 @@ import Chat from "../pages/Chat";
 import { NEW_MESSAGE_ALERT, NEW_REQUEST, REFETCH_CHATS } from "../constants/events";
 import { useDispatch, useSelector } from "react-redux";
 import { incrementNotification, setNewMessagesAlert } from "../redux/reducers/chat";
+import { setIsDeleteMenu,setSelectedDeleteChat} from "../redux/reducers/misc";
 import { saveToLocalStorage } from "../lib/Features";
+import DeleteChatMenu from './DeleteChatMenu'
  
 
 const AppLayout = (props) => { // Removed the higher-order component wrapper
@@ -36,9 +38,14 @@ const AppLayout = (props) => { // Removed the higher-order component wrapper
     if(isError) toast.error(error?.data?.mesage || 'something went wrong');
  },[isError,error])
 
-  const handleDeleteChat = (e, _id, groupChat) => {
-    e.preventDefault();
-    console.log(`clicked groupchat ${groupChat} and id = ${_id}`);
+ const deleteMenuAnchor = useRef(null);
+
+  const handleDeleteChat = (e, chatId, groupChat) => {
+    dispatch(setIsDeleteMenu(true));
+    dispatch(setSelectedDeleteChat({ chatId, groupChat }));
+    deleteMenuAnchor.current = e.currentTarget;
+     
+    console.log(`clicked groupchat ${groupChat} and id = ${chatId}`);
   };
 
   const newRequestListener = useCallback(() => {
@@ -77,6 +84,10 @@ useEffect(() => {
   return (
     <div className="w-full min-h-screen relative">
       <Header />
+      <DeleteChatMenu
+          dispatch={dispatch}
+          deleteMenuAnchor={deleteMenuAnchor}
+        />
       <div className="grid grid-cols-12 h-[91vh]">
         <div className="col-span-3 overflow-y-scroll h-[91vh]">
            {isLoading ? (
