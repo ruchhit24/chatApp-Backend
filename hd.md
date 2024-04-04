@@ -65,3 +65,7 @@ export default AppLayout()(Chat);
 
 npm run satrt
 npm strat
+
+
+//TODO
+1. local strorage me save nhi ho rha

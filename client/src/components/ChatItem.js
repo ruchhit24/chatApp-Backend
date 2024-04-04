@@ -20,7 +20,7 @@ const ChatItem = ({
     >
       <motion.div 
         initial={{ opacity: 0, y: "-100%" }}
-        whileInView={{ opacity: 1, y: 0 }} 
+        whileInView={{ opacity: 1, y: 0 }}  
         className="p-3 border-b-[1px] border-gray-400 flex items-center justify-between gap-3 hover:bg-gray-300"
       >
         <div className="flex items-center gap-3">

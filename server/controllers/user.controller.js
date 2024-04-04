@@ -4,7 +4,7 @@ import { Request } from "../models/request.model.js"
 import {Chat} from '../models/chat.model.js' 
   import { sendToken } from "../utils/sendToken.js"
 import { emitEvent, uploadFilesToCloudinary } from "../utils/features.js"
-import { NEW_REQUEST } from "../constants/events.js"
+import { NEW_REQUEST, REFETCH_CHATS } from "../constants/events.js"
 
 export const userTestContoller = (req,res)=>{
   res.send('hellow world')
@@ -49,12 +49,12 @@ export const newUser = async(req,res) => {
     
     if(!user) { return res.status(400).json({message : "invalid username"})}
     
-    const isPasswordMatched = await compare(password,user.password);
+    // const isPasswordMatched = await compare(password,user.password);
     
-    if(!isPasswordMatched)
-    {
-    return res.status(400).json({message : "invalid password"});
-    }
+    // if(!isPasswordMatched)
+    // {
+    // return res.status(400).json({message : "invalid password"});
+    // }
     
     sendToken(res,user,200,`welcome back ${user.name}`);
   }
@@ -111,21 +111,32 @@ export const sendFriendRequest = async (req, res) => {
 
 export const acceptFriendRequest = async (req, res) => {
   const { requestId, accept } = req.body;
+  console.log(requestId,accept)
 
   const request = await Request.findById(requestId)
-      .populate("sender", "name")
-      .populate("receiver", "name");
+  .populate("sender","name")
+  .populate("receiver","name");
 
-  if (!request) return res.status(404).json({ message: 'Request not found' });
+  if (!accept) {
+    await request.deleteOne();
+    return res.status(200).json({
+      success: true,
+      message: "Friend Request Rejected",
+    });
+}
+
+  
+ console.log('request',request)
+  if (!request) return res.status(404).json({
+    success: false,
+    message: " Request not found",
+  });
 
   if (request.receiver._id.toString() !== req.user.toString()) {
       return res.status(403).json({ message: 'You are not authorized to accept this request.' });
   }
 
-  if (!accept) {
-      await request.deleteOne();
-      return res.status(200).json({ message: 'Friend request rejected' });
-  }
+ 
 
   const members = [request.sender._id, request.receiver._id];
 
@@ -134,7 +145,7 @@ export const acceptFriendRequest = async (req, res) => {
       request.deleteOne()
   ]);
 
-  // emitEvent(req, REFETCH_CHATS, members);
+  emitEvent(req, REFETCH_CHATS, members);
 
   return res.status(200).json({ success: true, message: 'Friend request accepted', senderId: request.sender._id });
 };
@@ -142,7 +153,7 @@ export const acceptFriendRequest = async (req, res) => {
 export const getMyNotifications = async (req, res) => {
   try {
       const requests = await Request.find({ receiver: req.user }).populate("sender", "name avatar");
-
+      console.log('all requests = ',requests)
       const allRequests = requests.map((request) => ({
           _id: request._id,
           sender: { _id: request.sender._id, name: request.sender.name, avatar: request.sender.avatar.url }

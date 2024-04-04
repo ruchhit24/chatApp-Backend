@@ -2,8 +2,9 @@ import React from "react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 
-const GroupItem = ({ group, chatId }) => {
+const GroupItem = ({ group, chatId , index }) => {
   const { name, avatar, _id } = group;
+ 
   return (
     <Link
       to={`?group=${_id}`}
@@ -13,7 +14,7 @@ const GroupItem = ({ group, chatId }) => {
     >
       <motion.div
         initial={{ opacity: 0, y: "-100%" }}
-        whileInView={{ opacity: 1, y: 0 }} 
+        whileInView={{ opacity: 1, y: 0 }}  
         className="p-3 border-b-[1px] border-gray-400 flex items-center justify-between gap-3 hover:bg-gray-300"
       >
         <div className="flex items-center gap-3">

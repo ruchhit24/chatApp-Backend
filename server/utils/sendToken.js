@@ -11,7 +11,7 @@ const sendToken = (res, user, statusCode, message) => {
             maxAge: 15 * 24 * 60 * 60 * 1000, // 15 days in milliseconds
             sameSite: "none"
         })
-        .json({ success: true, message });
+        .json({ success: true, message,user});
 };
 
 export { sendToken };

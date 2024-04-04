@@ -31,11 +31,7 @@ const Header = () => {
     dispatch(setIsNewGroup(true));
   };
 
-  const openNotification = () => {
-    dispatch(setIsNotification(true)); 
-    dispatch(resetNotificationCount());
-  };
-
+ 
 
   const logoutHandler = async () => {
     try {
@@ -62,10 +58,10 @@ const Header = () => {
           </Link>
           {notificationCount ? (
           <Badge badgeContent={notificationCount} color="error">
-          <Notification onClick={openNotification} />
+          <Notification/>
           </Badge>
         ) : (
-          <Notification onClick={openNotification} />
+          <Notification/>
         )}
            
          <PiSignOutBold className='text-white w-6 h-6 cursor-pointer hover:text-gray-500' onClick={logoutHandler}/>

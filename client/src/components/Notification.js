@@ -6,8 +6,9 @@ import { useAcceptFriendRequestMutation, useGetNotificationsQuery } from '../red
 import { TiTick } from "react-icons/ti";
 import { RxCross2 } from "react-icons/rx";
 import { setIsNotification } from '../redux/reducers/misc';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { toast } from 'react-hot-toast';
+import { resetNotificationCount } from '../redux/reducers/chat';
 
 const style = {
     position: 'absolute',
@@ -24,27 +25,29 @@ const style = {
 const Notification = () => {
 
   const dispatch = useDispatch();
+  
+  const { isNotification } = useSelector((state) => state.misc);
 
     const [open, setOpen] = useState(false);
     const handleOpen = () => setOpen(true);
     const handleClose = () => setOpen(false);
     
     const { isLoading, data, error, isError } = useGetNotificationsQuery();
-//    console.log(data)
+   console.log('notification ka data = ',data)
 
    const [acceptRequest] = useAcceptFriendRequestMutation();
   
-   const friendRequestHandler = async ({ _id, accept }) => {
+   const friendRequestHandler = async ({ idd, accept }) => {
     dispatch(setIsNotification(false));
      try{
-      const res = await acceptRequest({requestId : _id,accept})
-      console.log(res)
-      if (res.data.success) {
+      const res = await acceptRequest({requestId : idd,accept})
+      console.log('res= ',res);
+      if (res.data?.success) {
         console.log("we need to use sockets here");
         toast.success(res.data.message);
          
       } else {
-        toast.error(res?.data.error || "Something went wrong");
+        toast.error(res.error.data.message || "Something went wrong");
       }
   }
 catch (error) {
@@ -52,13 +55,21 @@ catch (error) {
       toast.error("Something went wrong");
     }
   }
+  const openNotification = () => {
+    dispatch(setIsNotification(true)); 
+    dispatch(resetNotificationCount());
+  };
+
+
+  
+  const closeHandler = () => dispatch(setIsNotification(false));
     return (
         <>
-            <FaRegBell className='text-white w-6 h-6' onClick={handleOpen}/>
+            <FaRegBell className='text-white w-6 h-6'  onClick={openNotification}/>
                 
             <Modal
-                open={open}
-                onClose={handleClose}
+                open={isNotification}
+                onClose={closeHandler}
                 aria-labelledby="modal-modal-title"
                 aria-describedby="modal-modal-description"
             >
@@ -75,8 +86,8 @@ catch (error) {
                                         <h1>{`${x.sender.name} sends you a Request`}</h1>
                                     </div> 
                                     <div className='flex items-center gap-3'>
-                                    <TiTick className='h-10 w-10 text-green-700' onClick={()=> friendRequestHandler({ _id : x._id , accept : true})}/>
-                                   <RxCross2 className='h-10 w-10 text-red-600' onClick={()=> friendRequestHandler({ _id : x._id , accept : false})}/>
+                                    <TiTick className='h-10 w-10 text-green-700' onClick={()=> friendRequestHandler({ idd : x._id , accept : true})}/>
+                                   <RxCross2 className='h-10 w-10 text-red-600' onClick={()=> friendRequestHandler({ idd : x._id , accept : false})}/>
                                     </div>
                                 </div>
                             ))

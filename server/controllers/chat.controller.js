@@ -140,8 +140,8 @@ export const addMembers = async (req, res, next) => {
     const allUserNames = allNewMembers.map((member) => member.name).join(",");
 
     // Emitting an event
-    // emitEvent(req, ALERT, chat.members, `${allUserNames} has been added to the group`);
-    // emitEvent(req, REFETCH_CHATS, chat.members);
+    emitEvent(req, ALERT, chat.members, `${allUserNames} has been added to the group`);
+    emitEvent(req, REFETCH_CHATS, chat.members);
 
     return res
       .status(201)
@@ -180,9 +180,12 @@ export const removeMembers = async (req, res, next) => {
     await chat.save();
 
     console.log(`${userToBeRemoved.name} has been removed from the group`);
-    // // Emitting events
-    // emitEvent(req, ALERT, chat.members, `${userToBeRemoved.name} has been removed from the group`);
-    // emitEvent(req, REFETCH_CHATS, chat.members);
+    // Emitting events
+    emitEvent(req, ALERT, chat.members,{
+      message: `${userToBeRemoved.name} has been removed from the group`,
+      chatId,
+    });
+    emitEvent(req, REFETCH_CHATS, chat.members);
 
     return res
       .status(201)
@@ -232,7 +235,10 @@ export const leaveGroup = async (req, res, next) => {
 
     console.log(`${user.name} has left the group`);
     // Emitting events
-    emitEvent(req, ALERT, chat.members, `${user.name} has left the group`);
+    emitEvent(req, ALERT, chat.members, {
+      chatId,
+      message: `${user.name} has left the group`,
+    });
     emitEvent(req, REFETCH_CHATS, chat.members);
 
     return res
