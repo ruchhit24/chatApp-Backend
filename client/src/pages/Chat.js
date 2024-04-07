@@ -46,7 +46,7 @@ const Chat = () => {
 
   const [IamTyping, setIamTyping] = useState(false);
   const [userTyping, setUserTyping] = useState(false);
-  console.log(userTyping);
+  // console.log(userTyping);
   // console.log('i am tyyping',IamTyping)
 
   const[userChatId,setUserChatId] = useState(null)
@@ -55,9 +55,11 @@ const Chat = () => {
 
   const chatDetails = useChatDetailsQuery({ chatId, skip: !chatId });
 
+  console.log('chat details = ', chatDetails)
+
   const members = chatDetails?.data?.chat?.members;
 
-  // console.log(members)
+  console.log(members)
 
   const messageOnChange = (e) => {
     setMessage(e.target.value);

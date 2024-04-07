@@ -4,7 +4,8 @@ import { Request } from "../models/request.model.js"
 import {Chat} from '../models/chat.model.js' 
   import { sendToken } from "../utils/sendToken.js"
 import { emitEvent, uploadFilesToCloudinary } from "../utils/features.js"
-import { NEW_REQUEST, REFETCH_CHATS } from "../constants/events.js"
+import { NEW_REQUEST, ONLINE_USERS, REFETCH_CHATS } from "../constants/events.js"
+import { io, onlineUsers } from "../index.js"
 
 export const userTestContoller = (req,res)=>{
   res.send('hellow world')
@@ -56,7 +57,10 @@ export const newUser = async(req,res) => {
     // return res.status(400).json({message : "invalid password"});
     // }
     
+
     sendToken(res,user,200,`welcome back ${user.name}`);
+
+    io.emit(ONLINE_USERS, Array.from(onlineUsers));
   }
 
   export const getMyProfile = async(req,res) => {

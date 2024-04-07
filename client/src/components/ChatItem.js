@@ -14,7 +14,7 @@ const ChatItem = ({
   handleDeleteChat,
 }) => {
 
-  console.log(isOnline)
+  // console.log(isOnline)
   return (
     <Link
       to={`/chat/${_id}`}

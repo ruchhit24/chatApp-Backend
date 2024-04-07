@@ -40,7 +40,7 @@ const style = {
 
 const Groups = () => {
   const chatId = useSearchParams()[0].get("group");
-  console.log('chat id = ',chatId);
+  // console.log('chat id = ',chatId);
 
   const navigate = useNavigate()
 

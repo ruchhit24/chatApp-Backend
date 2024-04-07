@@ -33,7 +33,7 @@ const Notification = () => {
     const handleClose = () => setOpen(false);
     
     const { isLoading, data, error, isError } = useGetNotificationsQuery();
-   console.log('notification ka data = ',data)
+  //  console.log('notification ka data = ',data)
 
    const [acceptRequest] = useAcceptFriendRequestMutation();
   
@@ -41,9 +41,9 @@ const Notification = () => {
     dispatch(setIsNotification(false));
      try{
       const res = await acceptRequest({requestId : idd,accept})
-      console.log('res= ',res);
+      // console.log('res= ',res);
       if (res.data?.success) {
-        console.log("we need to use sockets here");
+        // console.log("we need to use sockets here");
         toast.success(res.data.message);
          
       } else {

@@ -6,8 +6,7 @@ import { useMyChatsQuery } from "../redux/api/api";
 import { Skeleton } from "@mui/material";
 import { useNavigate, useParams } from "react-router-dom"; 
 import { toast } from "react-hot-toast";
-import { useSocket } from "../socket";
-import Chat from "../pages/Chat";
+import { useSocket } from "../socket"; 
 import { NEW_MESSAGE_ALERT, NEW_REQUEST, ONLINE_USERS, REFETCH_CHATS } from "../constants/events";
 import { useDispatch, useSelector } from "react-redux";
 import { incrementNotification, setNewMessagesAlert } from "../redux/reducers/chat";
@@ -21,7 +20,7 @@ const AppLayout = (props) => { // Removed the higher-order component wrapper
   const { isLoading, data, isError, error, refetch } = useMyChatsQuery("");
 
   const [onlineUsers, setOnlineUsers] = useState([]);
-  console.log('online users applayout = ',onlineUsers)
+  // console.log('online users applayout = ',onlineUsers)
   
   const params = useParams();
   const { chatId } = params;

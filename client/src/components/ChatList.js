@@ -8,8 +8,8 @@ const ChatList = ({
   newMessagesAlert = [{ chatId: "", count: 0 }],
   handleDeleteChat,
 }) => {
-  console.log('online users = ',onlineUsers)
-  console.log('chats = ',chats)
+  // console.log('online users = ',onlineUsers)
+  // console.log('chats = ',chats)
   return (
     <div className="w-full min-h-screen">
       {chats?.map((data, index) => {
@@ -21,7 +21,7 @@ const ChatList = ({
         const isOnline = members?.some((member) =>
           onlineUsers.includes(member)
         );
-        console.log('chatlistm=',isOnline)
+        {/* console.log('chatlistm=',isOnline) */}
         return (
           <ChatItem
             avatar={avatar}

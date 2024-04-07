@@ -21,27 +21,36 @@ const isAuthenticated = async (req, res, next) => {
 
 
 export const socketAuthenticator = async (err, socket, next) => {
-    try {
-      if (err) console.log(err)
-  
-      const authToken = socket.request.cookies["access_token"];
-  
-      if (!authToken)
-       console.log("please login to access tis route")
-  
-      const decodedData = jwt.verify(authToken, process.env.JWT_SECRET);
-  
-      const user = await User.findById(decodedData._id);
-  
-      if (!user)
-        return ;
-  
-      socket.user = user;
-  
-      return next();
-    } catch (error) {
-      console.log(error);
-      console.log("please login to access tis route")
+  try {
+    if (err) {
+      console.log(err);
+      throw new Error("Socket authentication error");
     }
-  };
+
+    const authToken = socket.request.cookies["access_token"];
+
+    if (!authToken) {
+      throw new Error("Access token not found");
+    }
+
+    const decodedData = jwt.verify(authToken, process.env.JWT_SECRET);
+
+    if (!decodedData) {
+      throw new Error("Invalid access token");
+    }
+
+    const user = await User.findById(decodedData._id);
+
+    if (!user) {
+      throw new Error("User not found");
+    }
+
+    socket.user = user;
+
+    next();
+  } catch (error) {
+    console.log(error);
+    next(new Error("Socket authentication error"));
+  }
+};
 export { isAuthenticated };
