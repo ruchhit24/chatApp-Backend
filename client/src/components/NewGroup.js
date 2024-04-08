@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { IoIosRemoveCircle, IoMdAdd } from "react-icons/io";
 import Modal from "@mui/material/Modal";
-import { Box } from "@mui/material";
+import { Box, Tooltip } from "@mui/material";
 import { SampleUser } from "../utils/SampleUser";
 import { IoIosAddCircle } from "react-icons/io";
 import { useInputValidation } from "6pp";
@@ -12,6 +12,14 @@ import {
   useNewGroupMutation,
 } from "../redux/api/api";
 import { toast } from "react-hot-toast";
+import {
+  Add as AddIcon,
+  Menu as MenuIcon,
+  Search as SearchIcon,
+  Group as GroupIcon,
+  Logout as LogoutIcon,
+  Notifications as NotificationsIcon,
+} from "@mui/icons-material";
 
 const style = {
   position: "absolute",
@@ -80,7 +88,10 @@ const NewGroup = () => {
   };
   return (
     <>
-      <IoMdAdd className="text-white w-6 h-6" onClick={handleOpen} />
+     <Tooltip title="Create New Group" arrow>
+    <AddIcon fontSize='large' className='text-white w-6 h-6 cursor-pointer hover:text-gray-500' onClick={handleOpen} />
+    </Tooltip>
+       
 
       <Modal
         open={open}

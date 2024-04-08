@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import Modal from '@mui/material/Modal';
-import { Box } from '@mui/material';
+import { Box, Tooltip } from '@mui/material';
 import { IoSearchSharp } from "react-icons/io5";
 import { SampleUser } from '../utils/SampleUser';
 import { IoIosAddCircle, IoIosRemoveCircle } from "react-icons/io";
@@ -8,6 +8,14 @@ import { useInputValidation } from '6pp';
 import { useSelector } from 'react-redux';
 import { useLazySearchUserQuery, useSendFriendRequestMutation } from '../redux/api/api';
 import { toast } from 'react-hot-toast';
+import {
+  Add as AddIcon,
+  Menu as MenuIcon,
+  Search as SearchIcon,
+  Group as GroupIcon,
+  Logout as LogoutIcon,
+  Notifications as NotificationsIcon,
+} from "@mui/icons-material";
 
 const style = {
   position: 'absolute',
@@ -82,7 +90,13 @@ const Search = () => {
 
   return (
     <>
-      <IoSearchSharp className='text-white w-6 h-6' onClick={handleOpen} />
+    
+    <Tooltip title="Search Friends" arrow>
+    <div className='flex items-center'>
+    <SearchIcon fontSize='large' className='text-white cursor-pointer hover:text-gray-500' onClick={handleOpen} />
+    </div>
+    </Tooltip>
+       
 
       <Modal
         open={open}

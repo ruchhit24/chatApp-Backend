@@ -97,8 +97,8 @@ const Login = () => {
   };
 
   return (
-    <div className="w-full min-h-screen flex justify-center items-center">
-      <div className="w-[400px] border border-gray-400 shadow-2xl rounded-lg p-6">
+    <div className="w-full min-h-screen flex justify-center items-center bg-[url('https://images.unsplash.com/photo-1432821596592-e2c18b78144f?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D')] bg-cover ">
+      <div className="w-[400px] border bg-gray-200 opacity-90 border-gray-400 shadow-2xl rounded-lg p-6">
         {isSignedin ? (
           <>
             <h2 className="text-center mt-8 text-3xl font-bold">L o G i N</h2>

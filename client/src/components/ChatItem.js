@@ -36,7 +36,7 @@ const ChatItem = ({
             className="w-12 h-12 object-cover rounded-full "
           />
           <div className="flex justify-between items-center gap-5">
-            <h2>{name}</h2>
+            <h2 className="font-semibold text-lg">{name}</h2>
             {newMessageAlert && (
               <h2 className="font-bold text-sm">
                 {newMessageAlert.count} New Message

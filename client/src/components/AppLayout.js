@@ -109,7 +109,7 @@ useEffect(() => {
               chatId={chatId}
               handleDeleteChat={handleDeleteChat}
               newMessagesAlert={newMessagesAlert}
-              onlineUsers={onlineUsers}
+              // onlineUsers={onlineUsers}
             />
           )}
         </div>

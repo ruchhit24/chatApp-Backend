@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { FaRegBell } from "react-icons/fa"; 
 import Modal from '@mui/material/Modal';
-import { Box } from '@mui/material';  
+import { Box, Tooltip } from '@mui/material';  
 import { useAcceptFriendRequestMutation, useGetNotificationsQuery } from '../redux/api/api';
 import { TiTick } from "react-icons/ti";
 import { RxCross2 } from "react-icons/rx";
@@ -9,6 +9,14 @@ import { setIsNotification } from '../redux/reducers/misc';
 import { useDispatch, useSelector } from 'react-redux';
 import { toast } from 'react-hot-toast';
 import { resetNotificationCount } from '../redux/reducers/chat';
+import {
+  Add as AddIcon,
+  Menu as MenuIcon,
+  Search as SearchIcon,
+  Group as GroupIcon,
+  Logout as LogoutIcon,
+  Notifications as NotificationsIcon,
+} from "@mui/icons-material";
 
 const style = {
     position: 'absolute',
@@ -65,8 +73,10 @@ catch (error) {
   const closeHandler = () => dispatch(setIsNotification(false));
     return (
         <>
-            <FaRegBell className='text-white w-6 h-6'  onClick={openNotification}/>
-                
+            
+            <Tooltip title="Notifications" arrow>
+    <NotificationsIcon fontSize='large' className='text-white w-6 h-6 cursor-pointer hover:text-gray-500' onClick={openNotification}/>
+    </Tooltip>  
             <Modal
                 open={isNotification}
                 onClose={closeHandler}

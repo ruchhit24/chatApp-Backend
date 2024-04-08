@@ -211,7 +211,7 @@ const Groups = () => {
    
   return (
     <div className="grid grid-cols-12 w-full h-[100vh]">
-      <div className="grid col-span-3 bg-green-100 overflow-y-scroll">
+      <div className="grid col-span-3 bg-gray-100 overflow-y-scroll">
         <GroupList myGroups={myGroups?.data?.groups} chatId={chatId} />
       </div>
 
