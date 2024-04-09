@@ -50,12 +50,12 @@ export const newUser = async(req,res) => {
     
     if(!user) { return res.status(400).json({message : "invalid username"})}
     
-    // const isPasswordMatched = await compare(password,user.password);
+    const isPasswordMatched = await compare(password,user.password);
     
-    // if(!isPasswordMatched)
-    // {
-    // return res.status(400).json({message : "invalid password"});
-    // }
+    if(!isPasswordMatched)
+    {
+    return res.status(400).json({message : "invalid password"});
+    }
     
 
     sendToken(res,user,200,`welcome back ${user.name}`);
