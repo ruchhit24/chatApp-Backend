@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useFileHandler, useInputValidation} from '6pp'
-import { usernameValidator } from "../utils/validator";
+import { emailValidator, usernameValidator } from "../utils/validator";
 import { useStrongPassword } from "6pp"; 
 import { server } from '../constants/config'
 import axios from "axios";
@@ -19,6 +19,7 @@ const Login = () => {
   const dispatch = useDispatch();
 
   const username = useInputValidation("",usernameValidator ); 
+  const email = useInputValidation("",emailValidator);
   const name = useInputValidation( "" );
   const bio = useInputValidation( "" );
   const password = useStrongPassword();
@@ -69,6 +70,7 @@ const Login = () => {
     formData.append("name", name.value);
     formData.append("bio", bio.value);
     formData.append("username", username.value);
+    formData.append("email", email.value);
     formData.append("password", password.value);
 
     const config = {
@@ -160,6 +162,13 @@ const Login = () => {
                     </div>
                 )
               }
+              {
+                email.error && (
+                    <div className="text-center bg-red-600 rounded-lg mt-4">
+                        <h2 className="text-sm text-white p-3">{email.error}</h2>
+                    </div>
+                )
+              }
               
             <form className="flex flex-col items-center pt-4 gap-4" onSubmit={handleSignUp}>
               
@@ -178,6 +187,14 @@ const Login = () => {
                 className="border border-black p-2 w-full rounded-lg"
                 value={username.value}
                 onChange={username.changeHandler}
+              />
+              <input
+                type="email"
+                id="email"
+                placeholder="Enter Your email"
+                className="border border-black p-2 w-full rounded-lg"
+                value={email.value}
+                onChange={email.changeHandler}
               />
               
                <input

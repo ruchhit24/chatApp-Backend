@@ -6,6 +6,8 @@ import {Chat} from '../models/chat.model.js'
 import { emitEvent, uploadFilesToCloudinary } from "../utils/features.js"
 import { NEW_REQUEST, ONLINE_USERS, REFETCH_CHATS } from "../constants/events.js"
 import { io, onlineUsers } from "../index.js"
+import { generateOtp, mailTransport } from "../utils/mail.js"
+import { VerificationToken } from "../models/verificationToken.model.js"
 
 export const userTestContoller = (req,res)=>{
   res.send('hellow world')
@@ -13,7 +15,7 @@ export const userTestContoller = (req,res)=>{
 
 export const newUser = async(req,res) => {
 
-  const {bio,name,username,password} = req.body;
+  const {bio,name,username,password,email} = req.body;
   const file = req.file;
 
   console.log(file)
@@ -34,10 +36,24 @@ export const newUser = async(req,res) => {
    name,
    bio,
    username ,
+   email,
    password ,
    avatar,
-  }
-  )
+  })
+  const OTP = generateOtp()
+  const verificationToken = new VerificationToken ( {
+   owner : user._id,
+   token : OTP
+  })
+
+  await verificationToken.save()
+
+  mailTransport().sendMail({
+    from : "VChat@gmail.com",
+    to : user.email,
+    subject : 'verify ut email account',
+    html : '<h1>${OTP}</h1>'
+  })
   
   // res.status(201).json({ message : 'user craeted' })
 
@@ -50,12 +66,12 @@ export const newUser = async(req,res) => {
     
     if(!user) { return res.status(400).json({message : "invalid username"})}
     
-    // const isPasswordMatched = await compare(password,user.password);
+    const isPasswordMatched = await compare(password,user.password);
     
-    // if(!isPasswordMatched)
-    // {
-    // return res.status(400).json({message : "invalid password"});
-    // }
+    if(!isPasswordMatched)
+    {
+    return res.status(400).json({message : "invalid password"});
+    }
     
 
     sendToken(res,user,200,`welcome back ${user.name}`);
