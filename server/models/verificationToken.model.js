@@ -1,4 +1,4 @@
-import { hash } from "bcrypt";
+import bcrypt from "bcrypt";
 import mongoose from "mongoose";
 
 const verificationTokenSchema = new mongoose.Schema({
@@ -22,7 +22,7 @@ const verificationTokenSchema = new mongoose.Schema({
 verificationTokenSchema.pre("save",async function( next ){
     if(!this.isModified("token")) return next();
 
-    this.token = await hash(this.token,10)
+    this.token = await bcrypt.hash(this.token,10)
     next();
 }
 )

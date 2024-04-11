@@ -41,18 +41,18 @@ export const newUser = async(req,res) => {
    avatar,
   })
   const OTP = generateOtp()
-  const verificationToken = new VerificationToken ( {
+  const verificationToken = await VerificationToken.create({
    owner : user._id,
    token : OTP
   })
 
-  await verificationToken.save()
+  // await verificationToken.save()
 
   mailTransport().sendMail({
     from : "VChat@gmail.com",
     to : user.email,
     subject : 'verify ut email account',
-    html : '<h1>${OTP}</h1>'
+    html : `<h1>${OTP}</h1>`
   })
   
   // res.status(201).json({ message : 'user craeted' })
