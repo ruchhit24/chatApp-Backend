@@ -9,8 +9,7 @@ const userSchema = new mongoose.Schema({
     },
     username : {
         type:String,
-        required : true,
-        unique : true,
+        required : true, 
     },
     email : {
         type:String,
@@ -35,6 +34,11 @@ const userSchema = new mongoose.Schema({
             type :String,
             required : true,
         },
+    },
+    isVerified : {
+        type : Boolean,
+        default : false,
+        required : true,
     },
 },{ timestamps : true})
 

@@ -1,29 +1,4 @@
- import nodemailer from 'nodemailer'
-
-export const generateOtp = ()=>{
-    let otp= ''
-  for(let i=0;i<4;i++){
-    let randVal = Math.round(Math.random()*9)
-    otp = otp + randVal
-  }
-  return otp
-}
-export const mailTransport = ()=>  nodemailer.createTransport({
-        host: "sandbox.smtp.mailtrap.io",
-        port: 2525,
-        auth: {
-          user: process.env.MAILTRAP_USERNAME,
-          pass: process.env.MAILTRAP_PASSWORD
-        }
-      });
-
- export const generateEmailTemplate = (OTP,name) => {
-    const currentDate = new Date().toLocaleDateString('en-US', {
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric',
-      });
-    return `<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
@@ -62,11 +37,17 @@ export const mailTransport = ()=>  nodemailer.createTransport({
         <table style="width: 100%;">
           <tbody>
             <tr style="height: 0;">
-              
+              <td>
+                <img
+                  alt=""
+                  src="https://archisketch-resources.s3.ap-northeast-2.amazonaws.com/vrstyler/1663574980688_114990/archisketch-logo"
+                  height="30px"
+                />
+              </td>
               <td style="text-align: right;">
                 <span
                   style="font-size: 16px; line-height: 30px; color: #ffffff;"
-                  >${currentDate}</span
+                  >12 Nov, 2021</span
                 >
               </td>
             </tr>
@@ -104,7 +85,7 @@ export const mailTransport = ()=>  nodemailer.createTransport({
                 font-weight: 500;
               "
             >
-              Hey ${name},
+              Hey Tomy,
             </p>
             <p
               style="
@@ -131,7 +112,7 @@ export const mailTransport = ()=>  nodemailer.createTransport({
                 color: #ba3d4f;
               "
             >
-              ${OTP}
+              ${code}
             </p>
           </div>
         </div>
@@ -231,5 +212,4 @@ export const mailTransport = ()=>  nodemailer.createTransport({
       </footer>
     </div>
   </body>
-</html>  
-`}     
+</html> 

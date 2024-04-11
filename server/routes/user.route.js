@@ -1,5 +1,5 @@
 import express from 'express'
-import { acceptFriendRequest, getMyFriends, getMyNotifications, getMyProfile, login, logout, newUser, searchUser, sendFriendRequest, userTestContoller } from '../controllers/user.controller.js';
+import { acceptFriendRequest, getMyFriends, getMyNotifications, getMyProfile, login, logout, newUser, searchUser, sendFriendRequest, userTestContoller, verifyEmail } from '../controllers/user.controller.js';
 import { AvatarUpload } from '../middlewares/multer.js';
 import { isAuthenticated } from '../middlewares/auth.js';
 import { acceptRequestValidator, loginValidator, registerValidator, sendRequestValidator, validateHandler } from '../utils/validator.js';
@@ -11,6 +11,7 @@ router
 .get('/',userTestContoller)
 .post('/new',AvatarUpload,registerValidator(),validateHandler,newUser)
 .post('/login',loginValidator(),validateHandler,login)
+.post('/verify-email',verifyEmail)
 
 
 // ab yha se sare routes me authentication required h

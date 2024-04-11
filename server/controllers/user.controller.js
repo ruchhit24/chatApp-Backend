@@ -6,8 +6,9 @@ import {Chat} from '../models/chat.model.js'
 import { emitEvent, uploadFilesToCloudinary } from "../utils/features.js"
 import { NEW_REQUEST, ONLINE_USERS, REFETCH_CHATS } from "../constants/events.js"
 import { io, onlineUsers } from "../index.js"
-import { generateOtp, mailTransport } from "../utils/mail.js"
+import { generateEmailTemplate, generateOtp, mailTransport } from "../utils/mail.js"
 import { VerificationToken } from "../models/verificationToken.model.js"
+import { isValidObjectId } from "mongoose"
 
 export const userTestContoller = (req,res)=>{
   res.send('hellow world')
@@ -17,6 +18,18 @@ export const newUser = async(req,res) => {
 
   const {bio,name,username,password,email} = req.body;
   const file = req.file;
+
+    // Check if username is unique
+    const existingUsername = await User.findOne({ username });
+    if (existingUsername) {
+      return res.status(400).json({ success: false, message: 'Username is already taken.' });
+    }
+  
+    // Check if email is unique
+    const existingEmail = await User.findOne({ email });
+    if (existingEmail) {
+      return res.status(400).json({ success: false, message: 'Email is already registered.' });
+    }
 
   console.log(file)
 
@@ -51,13 +64,46 @@ export const newUser = async(req,res) => {
   mailTransport().sendMail({
     from : "VChat@gmail.com",
     to : user.email,
-    subject : 'verify ut email account',
-    html : `<h1>${OTP}</h1>`
+    subject : 'Verify Your Email Account',
+    html : generateEmailTemplate(OTP,user.name)
   })
   
   // res.status(201).json({ message : 'user craeted' })
 
   sendToken(res,user,201,'User Created successfully')
+  }
+
+  export const verifyEmail = async(req,res)=>{
+    const { userId , otp} = req.body;
+    if(!userId || !otp.trim()){
+      return res.status(400).json({ success: false, message: 'Invalid Request, Missing Parameters!!' });
+    }
+    if(!isValidObjectId(userId))
+    {
+      return res.status(400).json({ success: false, message: 'Invalid user id' });
+    }
+    const user = await User.findById(userId)
+    if(!user){
+      return res.status(400).json({ success: false, message: 'user not found' });
+    }
+    if(user.isVerified){
+      return res.status(400).json({ success: false, message: 'user already verified' });
+    }
+   const token = await VerificationToken.findOne({owner : user._id})
+   if(!token){
+    return res.status(400).json({ success: false, message: 'user not found' });
+  }
+  const isMatched = await token.compareToken(otp)
+  if(!isMatched){
+    return res.status(400).json({ success: false, message: 'please provid valid OTP' });
+  }
+  user.isVerified = true;
+
+  //delete the token from our database
+  await VerificationToken.findByIdAndDelete(token._id)
+  await user.save()
+
+  return res.status(200).json({ success: true, message: 'Email Verified Successfully!!' });
   }
 
   export const login = async(req,res) =>{ 
