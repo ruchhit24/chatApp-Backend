@@ -9,6 +9,7 @@ import { router as chatRouter } from "./routes/chat.route.js";
 // import { createUser } from './seeders/user.js';
 import { Server } from "socket.io";
 import { createServer } from "http";
+import path from 'path';
 import {
   CHAT_JOINED,
   CHAT_LEAVED,
@@ -30,6 +31,8 @@ dotenv.config();
 const server = express();
 
 const PORT = 8000;
+
+const __dirname = path.resolve();
 
 const corsOptions = {
   origin: "http://localhost:3000",
@@ -173,13 +176,14 @@ io.on("connection", (socket) => {
   });
 });
 
-server.get("/", (req, res) => {
-  res.send("root page !!");
-});
+// server.get("/", (req, res) => {
+//   res.send("root page !!");
+// });
 
 server.use("/api/v1/user", userRouter);
 
 server.use("/api/v1/chat", chatRouter);
+
 
 server2.listen(PORT, () => {
   console.log(`server is listening at port =${PORT} `);
