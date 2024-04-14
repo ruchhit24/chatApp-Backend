@@ -35,7 +35,7 @@ const PORT = 8000;
 const __dirname = path.resolve();
 
 const corsOptions = {
-  origin: "http://localhost:3000",
+  origin: ["http://localhost:3000",process.env.CLIENT_URL],
   methods: ["GET", "PUT", "DELETE", "POST"],
   credentials: true, // Enable CORS credentials (cookies, authorization headers, etc.)
 };
@@ -44,7 +44,7 @@ server.use(express.json());
 server.use(cookieParser());
 server.use(
   cors({
-    origin: "http://localhost:3000",
+    origin: ["http://localhost:3000",process.env.CLIENT_URL],
     methods: ["GET", "PUT", "DELETE", "POST"],
     credentials: true, // Enable CORS credentials (cookies, authorization headers, etc.)
   })
